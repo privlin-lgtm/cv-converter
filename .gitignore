@@ -8,3 +8,4 @@ dist
 phase0-*.md
 .claude/settings.local.json
 .claude/worktrees/
+tmp/
