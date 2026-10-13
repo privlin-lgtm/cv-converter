@@ -1,4 +1,4 @@
-# Spec: CV Converter MVP  (from intent.md, 2026-10-10) · Status: draft
+# Spec: CV Converter MVP  (from intent.md, 2026-10-10) · Status: approved
 
 ## Features
 
