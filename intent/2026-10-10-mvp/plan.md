@@ -146,9 +146,9 @@ cp .env.example .env
 
 **M3. Conversion API** (about 85 minutes; Opus for the prompt, schema and Zod, Sonnet for wiring)
 - **Model client,** behind `convertWithModel()`:
-  - `output_config.format` `json_schema`, written by hand (every object `additionalProperties: false`, every field required); `max_tokens` 8,000.
+  - `output_config.format` `json_schema`, written by hand (every object `additionalProperties: false`, every field required); `max_tokens` 12,000.
   - SDK client created with `maxRetries: 0`, and one 150-second deadline per request that covers every attempt.
-  - Retries once within the deadline on invalid JSON or `max_tokens` (at `max_tokens` 12,000). A `refusal` gives 422; past the deadline gives 504.
+  - Retries once within the deadline on invalid JSON or `max_tokens` (at `max_tokens` 16,000). A `refusal` gives 422; past the deadline gives 504.
 - **Prompt builder:**
   - Takes the direction, the optional kind of job, and the target's rules as `key: rule` lines.
   - Adds the three army-service example rewrites for Israel → abroad only.
