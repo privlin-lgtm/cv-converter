@@ -1,5 +1,5 @@
 # Intent: CV Converter MVP (Developers Institute hackathon build)
-Author: Paul Rivlin · Source: idea (Phase 0 screen `phase0-jobseeker-coaches-2026-10.md`, idea V5) · Status: draft
+Author: Paul Rivlin · Source: idea (Phase 0 screen `phase0-jobseeker-coaches-2026-10.md`, idea V5) · Status: accepted
 
 ## Problem
 A CV that works in one country works against you in another. An Israeli CV sent to a US, UK or German employer usually breaks local norms. It may carry a date of birth, marital status or ID number. Army service is written in Hebrew acronyms and ranks no one abroad can read. Dates are in the wrong format, and the page is the wrong length or paper size. Olim and other newcomers have the same problem in reverse: a US résumé or German Lebenslauf reads oddly to an Israeli recruiter.
