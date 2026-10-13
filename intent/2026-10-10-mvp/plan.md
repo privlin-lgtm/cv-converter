@@ -309,12 +309,12 @@ cv-converter/
            src/pages/{ConvertPage,ResultPage,NotFound}.tsx
            src/components/{CvSheet,ChangesList,ChecksPanel,QuestionsList,RatingForm}.tsx
            src/styles/{app.css,print.css}
-  server/  package.json  knexfile.ts  vitest.config.ts  .env.example
-           src/{app.ts, index.ts, db.ts}
+  server/  package.json  vitest.config.ts  .env.example
+           src/{app.ts, index.ts, db.ts, env.ts}
            src/routes/{health,countries,convert,extract,ratings}.ts
            src/services/{norms,prompt,model,result,checks,extract}.ts
            src/schemas/{request,modelOutput}.ts  (Zod, plus the hand-written JSON schema)
-           db/migrations/  db/seeds/{01_countries,02_norms}.ts
+           db/run.ts  db/migrations/  db/seeds/{01_countries,02_norms}.ts
            test/  test/globalSetup.ts  test/fixtures/
 ```
 
@@ -345,7 +345,7 @@ All new: `countries`, `norms` and `ratings`, as in spec.md. They are created in 
 | Print CSS differs across browsers | Target Chrome and Edge; test print preview in Chrome |
 | A real CV or key reaches the public repo | `.gitignore`, the secret-guard hook, the fixture-marker test, GitHub push protection, the history scan before submission |
 | Local Postgres setup eats day-1 time | Decide local vs Neon before Tuesday |
-| Knex with a TypeScript knexfile fights back | Run migrations and seeds through `tsx`, or call `knex.migrate.latest()` from the Vitest global setup |
+| Knex with a TypeScript knexfile fights back | Done in M1: no knexfile. `server/src/db.ts` holds the Knex config; `npm run db:migrate` / `db:seed` run `db/run.ts` through `tsx`, and the Vitest global setup calls `db.migrate.latest()` and `db.seed.run()` directly |
 | Rules data becomes public | Accepted for v1 if Paul agrees (intent question 4) |
 
 ## Rejected alternatives

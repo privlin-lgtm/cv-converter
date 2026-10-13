@@ -1,0 +1,27 @@
+{
+  "env": { "CLAUDE_CODE_USE_POWERSHELL_TOOL": "0" },
+  "permissions": {
+    "defaultMode": "default",
+    "deny": [
+      "Read(**/.env)", "Read(**/.env.*.local)",
+      "Bash(gh pr merge *)", "Bash(git push * main)", "Bash(git push * master)"
+    ],
+    "allow": [
+      "Bash(git status)", "Bash(git diff *)", "Bash(git log *)", "Bash(git add *)",
+      "Bash(git commit *)", "Bash(git switch *)", "Bash(git push -u origin *)",
+      "Bash(npm run *)", "Bash(npm test)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-placeholders.mjs\"" }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash|PowerShell",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/production-gate.mjs\"" }] },
+      { "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/secret-guard.mjs\"" }] }
+    ]
+  }
+}

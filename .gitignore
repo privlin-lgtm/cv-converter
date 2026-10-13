@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.env.*.local
+*.pdf
+*.docx
+!server/test/fixtures/**
+phase0-*.md
+.claude/settings.local.json
+.claude/worktrees/
