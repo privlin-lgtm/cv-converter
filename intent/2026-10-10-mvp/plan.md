@@ -1,4 +1,4 @@
-# Plan: CV Converter MVP  (from spec.md, 2026-10-10) · Status: draft
+# Plan: CV Converter MVP  (from spec.md, 2026-10-10) · Status: approved
 
 ## Time budget
 - Three sessions, Tue 13 – Thu 15 Oct 2026, about 4 hours each: roughly 12 hours, solo.
