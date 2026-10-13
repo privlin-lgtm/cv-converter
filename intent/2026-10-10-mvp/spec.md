@@ -154,7 +154,7 @@ Deliberately absent: users, sessions, saved CVs or conversions, and the extracte
     - the target's rules, as a numbered list of `key: rule` lines;
     - for Israel → abroad only, the three army-service example rewrites from the research notes;
     - the CV text inside clear delimiters, marked as data, not instructions.
-  - `max_tokens` 8,000.
+  - `max_tokens` 12,000. Output tokens include adaptive thinking, and the M3 real runs used up to 6,779, so 8,000 left too little room.
 - **Schema constraints** (from the structured-outputs docs):
   - Write the JSON schema by hand, kept beside the Zod schema. Generating it from Zod would leak `.max()` limits into `maxLength`, which the API rejects.
   - Every object sets `additionalProperties: false`, and every property is required (empty strings or arrays when not applicable), which keeps the schema inside the optional-parameter limits.
@@ -164,7 +164,7 @@ Deliberately absent: users, sessions, saved CVs or conversions, and the extracte
   - One overall deadline of 150 seconds per request (an `AbortController`) covers every attempt; past it the route returns 504. This stays well inside Vercel's 300-second function limit.
 - **Validation and failure:**
   - The response is parsed with Zod.
-  - If parsing fails, or `stop_reason` is `max_tokens`, the server retries once within the same deadline (with `max_tokens` 12,000 for truncation).
+  - If parsing fails, or `stop_reason` is `max_tokens`, the server retries once within the same deadline (with `max_tokens` 16,000 for truncation). Both limits stay under the SDK's non-streaming ceiling (about 21,000 tokens, its 10-minute expected-time cap), so no streaming is needed.
   - A `refusal` returns 422 with a plain message. Any other failure returns 502.
   - The text stays in the browser so the user can retry.
 - **Threshold and below-threshold behaviour:** the LLM gives no confidence score. Its uncertainty goes into `questions` (facts it needs) and `notes`. The deterministic checks (F5) then verify the output against the rules. Each check is either pass or flagged; a flag is shown to the user and never auto-fixed. Checks are code, not a model, so there is no "unsure" state.

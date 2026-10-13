@@ -4,8 +4,8 @@ import { modelOutputJsonSchema, modelOutputSchema, type ModelOutput } from '../s
 import type { Prompt } from './prompt.js'
 
 export const DEADLINE_MS = 150_000
-const MAX_TOKENS = 8_000
-const MAX_TOKENS_RETRY = 12_000
+const MAX_TOKENS = 12_000
+const MAX_TOKENS_RETRY = 16_000
 
 export type SendMessage = (
   params: Anthropic.MessageCreateParamsNonStreaming,

@@ -105,7 +105,7 @@ describe('POST /api/convert', () => {
 
     expect(model.calls).toHaveLength(1)
     const [params] = model.calls
-    expect(params).toMatchObject({ model: 'fake-model', max_tokens: 8000 })
+    expect(params).toMatchObject({ model: 'fake-model', max_tokens: 12000 })
     expect(params.output_config?.format?.type).toBe('json_schema')
     const user = params.messages[0].content as string
     expect(user).toContain('Kind of job: Backend developer')
@@ -137,14 +137,14 @@ describe('POST /api/convert', () => {
     const model = fakeModel(message(JSON.stringify({ ...validOutput, notes: 'oops' })), message(JSON.stringify(validOutput)))
     const res = await post(model.send, ilToUs)
     expect(res.status).toBe(200)
-    expect(model.calls.map((call) => call.max_tokens)).toEqual([8000, 8000])
+    expect(model.calls.map((call) => call.max_tokens)).toEqual([12000, 12000])
   })
 
-  it('retries a max_tokens cut-off with max_tokens 12000', async () => {
+  it('retries a max_tokens cut-off with max_tokens 16000', async () => {
     const model = fakeModel(message('{"cv":', 'max_tokens'), message(JSON.stringify(validOutput)))
     const res = await post(model.send, ilToUs)
     expect(res.status).toBe(200)
-    expect(model.calls.map((call) => call.max_tokens)).toEqual([8000, 12000])
+    expect(model.calls.map((call) => call.max_tokens)).toEqual([12000, 16000])
   })
 
   it('returns 422 on a refusal, without retrying', async () => {
