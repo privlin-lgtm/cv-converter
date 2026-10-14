@@ -163,6 +163,28 @@ describe('conversion error', () => {
     expect(callsTo(fetchMock, '/api/convert')).toHaveLength(2)
   })
 
+  it('disables Try again for text the server would refuse', async () => {
+    const fetchMock = stubFetch((url) =>
+      url === '/api/convert' ? jsonResponse({ error: 'The model returned invalid output twice.' }, 502) : countriesOk(url),
+    )
+    renderConvertPage()
+    await loaded()
+    typeCv()
+    fireEvent.click(screen.getByRole('button', { name: 'Convert' }))
+    const retry = within(await screen.findByRole('alert')).getByRole('button', { name: 'Try again' })
+    expect(retry).toBeEnabled()
+
+    typeCv('')
+    expect(retry).toBeDisabled()
+    typeCv('a'.repeat(20_001))
+    expect(retry).toBeDisabled()
+    fireEvent.click(retry)
+    expect(callsTo(fetchMock, '/api/convert')).toHaveLength(1)
+
+    typeCv()
+    expect(retry).toBeEnabled()
+  })
+
   it('says so when the server cannot be reached', async () => {
     stubFetch((url) => {
       if (url !== '/api/convert') return countriesOk(url)

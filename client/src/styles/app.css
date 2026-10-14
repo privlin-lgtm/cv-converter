@@ -211,6 +211,10 @@ button:disabled {
   border: 1px solid var(--danger);
 }
 
+.secondary:disabled {
+  opacity: 0.5;
+}
+
 .alert {
   display: flex;
   flex-wrap: wrap;

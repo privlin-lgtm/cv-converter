@@ -156,7 +156,7 @@ function ConvertPage() {
               <p>
                 <strong>Couldn't convert your CV.</strong> {error}
               </p>
-              <button type="button" className="secondary" onClick={() => void convert()}>
+              <button type="button" className="secondary" disabled={!canConvert} onClick={() => void convert()}>
                 Try again
               </button>
             </div>
