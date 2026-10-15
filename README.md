@@ -9,13 +9,68 @@ It works in both directions through Israel:
 ## Status
 Being built during the Developers Institute hackathon (Full Stack + AI, part-time, May 2026 – December 2026), 15–20 October 2026. Work started on 13 October, the original start date, before the hackathon was postponed. Each milestone lands as its own pull request.
 
+## Team
+Paul Rivlin, solo ([GitHub: privlin-lgtm](https://github.com/privlin-lgtm)).
+
+## Technologies
+- TypeScript
+- React 19 with Redux Toolkit and React Router, built with Vite
+- Node.js with Express 5
+- PostgreSQL with Knex
+- Zod for validation
+- The Claude API through the Anthropic TypeScript SDK, with structured output (the model comes from `ANTHROPIC_MODEL`, set to `claude-sonnet-5-5` in `server/.env.example`)
+- Vitest, Testing Library and supertest for tests
+- oxlint for linting
+- GitHub Actions for CI
+
 ## How it works
 1. The country rules (photo, date of birth, date format, length, paper size, how to describe army service and more) live in PostgreSQL, each with its sources.
 2. The server sends the target country's rules and the CV to the Claude API, which returns the rewritten CV and a list of changes in a fixed structure.
 3. Automatic checks test the result against the key rules, and the app asks for missing facts instead of inventing them.
 4. "Save as PDF" uses the browser's print dialog, on A4 or US Letter as the country expects.
 
-**Stack:** TypeScript, React with Redux Toolkit (Vite), Node.js with Express, PostgreSQL with Knex, Vitest.
+## Run it locally
+**Prerequisites:** Node.js (LTS), PostgreSQL, and an Anthropic API key from the Anthropic Console.
+
+1. Clone the repo and open its folder:
+   ```
+   git clone https://github.com/privlin-lgtm/cv-converter
+   cd cv-converter
+   ```
+2. Create two empty databases, `cv_converter_dev` and `cv_converter_test`, with `createdb` (it comes with PostgreSQL) or in pgAdmin:
+   ```
+   createdb cv_converter_dev
+   createdb cv_converter_test
+   ```
+3. Install the dependencies from the repo root:
+   ```
+   npm install
+   ```
+4. Copy the example config to `server/.env`. In macOS, Linux or Git Bash:
+   ```
+   cp server/.env.example server/.env
+   ```
+   In PowerShell:
+   ```
+   Copy-Item server/.env.example server/.env
+   ```
+   Then open `server/.env` and fill in `ANTHROPIC_API_KEY`, `DATABASE_URL` (the `cv_converter_dev` database) and `DATABASE_URL_TEST` (the `cv_converter_test` database). Each database URL is `postgres://`, then your PostgreSQL user and password, then `@localhost:5432/` and the database name. `ANTHROPIC_MODEL` and `PORT` already have values. `server/.env` is git-ignored; never commit it.
+5. Create the tables and load the country rules into the dev database:
+   ```
+   npm run db:migrate
+   npm run db:seed
+   ```
+6. Start the app, then open http://localhost:5173:
+   ```
+   npm run dev
+   ```
+   The client runs on port 5173 and the API on port 3001. The app opens on the Convert page; the result page is the next milestone, so a finished conversion does not show a result yet.
+7. Run the tests and the linter:
+   ```
+   npm test
+   npm run lint
+   ```
+   The tests use only the `cv_converter_test` database (`DATABASE_URL_TEST`), which they migrate and seed themselves before the run. They use a fake model, so they need no `ANTHROPIC_API_KEY` and make no calls to the Claude API. Only pressing Convert in the running app calls it.
 
 ## Privacy
 The app never stores a CV. It is sent to the Claude API to be rewritten and shown only to the user. All tests use made-up CVs.
