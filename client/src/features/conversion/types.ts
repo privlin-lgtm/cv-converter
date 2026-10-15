@@ -49,6 +49,7 @@ export interface KeyedText {
 
 export interface CheckResult {
   ruleKey: string
+  rule: string
   result: 'pass' | 'flagged'
   detail: string
 }

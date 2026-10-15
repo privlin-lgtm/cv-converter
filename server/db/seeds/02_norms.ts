@@ -700,7 +700,10 @@ const de: NormRow[] = [
       'https://europass.europa.eu/en/common-european-framework-reference-language-skills',
     ],
     status: 'confirmed',
-    check: { type: 'absent', pattern: '[★☆●○%]' },
+    check: {
+      type: 'absent',
+      pattern: '[★☆●○]|\\b(?:Hebrew|English|German|Arabic|French|Spanish|Russian)\\b[^\\n%]{0,30}\\d+\\s?%',
+    },
   },
   {
     key: 'it_skills',

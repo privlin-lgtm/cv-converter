@@ -70,7 +70,9 @@ describe('buildResult', () => {
   })
 
   it('runs the checks and adds meta from the country', () => {
-    expect(result.checks).toEqual([{ ruleKey: 'date_of_birth', result: 'pass', detail: 'Not found' }])
+    expect(result.checks).toEqual([
+      { ruleKey: 'date_of_birth', rule: 'Remove the date of birth.', result: 'pass', detail: 'Not found' },
+    ])
     expect(result.meta).toEqual({ model: 'fake-model', country: 'US', paperSize: 'Letter', documentName: 'Résumé' })
   })
 })

@@ -1,0 +1,37 @@
+FICTIONAL TEST CV — NOT A REAL PERSON
+LEBENSLAUF
+
+Persönliche Daten
+Name: Lena Hartmann
+Geburtsdatum: 12.05.1993
+Geburtsort: Leipzig
+Familienstand: ledig
+Staatsangehörigkeit: deutsch
+Anschrift: Lindenstraße 14, 04109 Leipzig
+Telefon: +49 341 555 0163
+E-Mail: lena.hartmann@example.com
+
+Berufserfahrung
+03/2020 – heute  Projektleiterin Einkauf, Mertens Maschinenbau GmbH, Leipzig
+- Verantwortung für ein Einkaufsvolumen von 4 Mio. Euro pro Jahr
+- Einführung einer Lieferantenbewertung, Reduktion der Reklamationen um 15 %
+- Fachliche Führung von 2 Werkstudenten
+
+09/2017 – 02/2020  Sachbearbeiterin Einkauf, Kranz Elektrotechnik AG, Halle (Saale)
+- Bestellabwicklung und Rahmenverträge für Elektronikbauteile
+- Pflege der Stammdaten in SAP
+
+Ausbildung
+10/2013 – 07/2017  Bachelor of Arts, Betriebswirtschaftslehre, Universität Leipzig (Note: 2,1)
+08/2010 – 06/2013  Abitur, Thomas-Gymnasium Leipzig
+
+Kenntnisse
+Sprachen: Deutsch (Muttersprache), Englisch (fließend), Spanisch (Grundkenntnisse)
+EDV: SAP MM, MS Excel (sehr gut), Power BI (Grundkenntnisse)
+Führerschein: Klasse B
+
+Hobbys
+Klettern, Chorgesang
+
+Leipzig, 15.10.2026
+Lena Hartmann

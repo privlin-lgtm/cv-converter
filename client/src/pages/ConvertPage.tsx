@@ -1,5 +1,5 @@
 import { useEffect, type SyntheticEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   convertCv,
   MAX_TARGET_ROLE_CHARS,
@@ -30,6 +30,7 @@ const formatCount = (n: number) => n.toLocaleString('en')
 function ConvertPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const notice = (useLocation().state as { notice?: string } | null)?.notice
   const countries = useAppSelector((state) => state.countries)
   const { from, to, text, targetRole, status, error } = useAppSelector((state) => state.conversion)
 
@@ -57,6 +58,11 @@ function ConvertPage() {
   return (
     <main className="page">
       <h1>CV Converter</h1>
+      {notice && (
+        <p className="notice" role="status">
+          {notice}
+        </p>
+      )}
       <form className="card" onSubmit={handleSubmit}>
         <fieldset className="form-body" disabled={converting}>
           <fieldset className="direction">
