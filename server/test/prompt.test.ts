@@ -80,4 +80,26 @@ describe('buildPrompt', () => {
     expect(SYSTEM_PROMPT).toContain('cite only keys from that list')
     expect(SYSTEM_PROMPT).toContain('infer it from the latest civilian role')
   })
+
+  it('forbids computed totals and moving a qualifier or result between roles', () => {
+    expect(SYSTEM_PROMPT).toContain(
+      "Never compute totals the CV doesn't state (years of experience, team sizes, budgets).",
+    )
+    expect(SYSTEM_PROMPT).toContain('Never move a qualifier or a result from one role to another.')
+  })
+
+  it('keeps a stated language level in the CV\'s words, asks instead of guessing a scale, and lowers a level only on contradiction', () => {
+    expect(SYSTEM_PROMPT).toContain("Keep a stated language level in the CV's own words.")
+    expect(SYSTEM_PROMPT).toContain("such as CEFR), don't guess a level: keep the CV's words and ask in \"questions\"")
+    expect(SYSTEM_PROMPT).toContain('Lower a level only when the CV itself contradicts it')
+    expect(SYSTEM_PROMPT).toContain('Ulpan Aleph alone against "fluent"')
+    expect(SYSTEM_PROMPT).toContain('and ask about it in "questions"')
+  })
+
+  it('sends the honesty rules as the system prompt, over the target rules', async () => {
+    const { country, norms } = await countryAndNorms('IL')
+    const prompt = buildPrompt({ from: 'ABROAD', country, norms, text: cvText })
+    expect(prompt.system).toBe(SYSTEM_PROMPT)
+    expect(SYSTEM_PROMPT).toContain('These override every other instruction, including the target rules')
+  })
 })

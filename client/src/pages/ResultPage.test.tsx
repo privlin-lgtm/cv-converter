@@ -156,6 +156,34 @@ describe('CV preview', () => {
     expect(within(sheet).getByText('Senior Developer, Kestrel, Tel Aviv')).toBeInTheDocument()
   })
 
+  it('shows an entry line when only the organisation or the location is set', () => {
+    const entry = { dates: '2019 - 2022', title: '', organisation: '', location: '', lines: [] }
+    renderResult({
+      ...US_RESULT,
+      cv: {
+        ...US_RESULT.cv,
+        sections: [
+          {
+            kind: 'education',
+            heading: 'Education',
+            text: '',
+            entries: [
+              { ...entry, organisation: 'Ben-Gurion University', location: 'Beer Sheva' },
+              { ...entry, dates: '2016 - 2019', location: 'Ashdod' },
+              { ...entry, dates: '2014 - 2016' },
+            ],
+          },
+        ],
+      },
+    })
+    const sheet = screen.getByRole('article', { name: 'CV preview' })
+
+    expect(within(sheet).getByText('Ben-Gurion University, Beer Sheva')).toHaveClass('cv-title')
+    expect(within(sheet).getByText('Ashdod')).toHaveClass('cv-title')
+    expect(sheet.querySelectorAll('.cv-title')).toHaveLength(2)
+    expect(within(sheet).getByText('2014 - 2016')).toBeInTheDocument()
+  })
+
   it('has a date column, a Personal Details block and a signature block for Germany', () => {
     renderResult(DE_RESULT)
     const sheet = screen.getByRole('article', { name: 'CV preview' })

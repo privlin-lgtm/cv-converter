@@ -18,7 +18,9 @@ function CvSheet({ cv, layout }: { cv: Cv; layout: SheetLayout }) {
           {section.entries.map((entry, j) => (
             <div key={j} className="cv-entry">
               {entry.dates && <p className="cv-dates">{entry.dates}</p>}
-              {entry.title && <p className="cv-title">{[entry.title, entry.organisation, entry.location].filter(Boolean).join(', ')}</p>}
+              {(entry.title || entry.organisation || entry.location) && (
+                <p className="cv-title">{[entry.title, entry.organisation, entry.location].filter(Boolean).join(', ')}</p>
+              )}
               {entry.lines.length > 0 && (
                 <ul className="cv-lines">
                   {entry.lines.map((line, k) => (
