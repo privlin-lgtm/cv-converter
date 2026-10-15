@@ -74,6 +74,7 @@ node --version
 ```
 
 ## Milestones
+The day headings and checkpoint notes below follow the original 13–15 Oct schedule. Where they differ, the revised schedule under 'Time budget' and the re-dated checkpoints under 'Cut line' apply.
 
 ### Day 1 — Tue 13 Oct: rules in, conversion out (API)
 
