@@ -30,7 +30,7 @@ Paul Rivlin, solo ([GitHub: privlin-lgtm](https://github.com/privlin-lgtm)).
 4. "Save as PDF" uses the browser's print dialog, on A4 or US Letter as the country expects.
 
 ## Run it locally
-**Prerequisites:** Node.js (LTS), PostgreSQL, and an Anthropic API key from the Anthropic Console.
+**Prerequisites:** Node.js (LTS), PostgreSQL, and an Anthropic API key from the Anthropic Console. The API uses port 3001 and the client uses port 5173, so both must be free; leave `PORT` in `server/.env` at 3001, because the client's dev proxy expects the API there.
 
 1. Clone the repo and open its folder:
    ```
