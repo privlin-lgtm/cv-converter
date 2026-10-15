@@ -16,6 +16,7 @@
 | 1:49–2:00 | The rating form, then an end card with the repo URL and "Paul Rivlin · Developers Institute Hackathon, Oct 2026". | "Next: my classmates test it on their own CVs and tell me whether it beat ChatGPT. Thanks for watching." |
 
 **Recording notes**
+- The video is submitted as a Loom link. Record in Loom, or edit the clips as before and upload the finished video to Loom. Check it runs no longer than 2:00 and that the link opens for someone who isn't signed in.
 - Record each row as its own clip at 1920×1080 with the browser zoomed to 125%, then join them (Clipchamp is built into Windows 11).
 - Run the conversions before recording and cut the waiting out of the video. Don't fake any output; just trim the wait.
 - Pre-fill the text box from the fixtures; don't type on camera.

@@ -1,6 +1,21 @@
 # Plan: CV Converter MVP  (from spec.md, 2026-10-10) · Status: approved
 
 ## Time budget
+
+### Revised schedule (from 15 Oct 2026)
+The hackathon was postponed. The official window is Thu 15 Oct – Tue 20 Oct 2026, 18:00 Israel time. Work started on 13 Oct, the original start date, before the postponement was announced; the instructor knows and has approved this.
+
+| Day | Work |
+|---|---|
+| Tue 13 Oct | Repo setup, M1, M2, M3 (done) |
+| Wed 14 Oct | M3 merged; M4 opened as PR #5. Hackathon postponed. |
+| Thu 15 Oct | Merge PR #5 and this docs PR; start M5 |
+| Fri 16 – Sat 17 Oct | M5, M6 |
+| Sun 18 Oct | M7 and M8 in a 90-minute time box |
+| Mon 19 Oct | M9: README, final check, video |
+| Tue 20 Oct | Submit by 12:00 (deadline 18:00) |
+
+### Original schedule (13–15 Oct)
 - Three sessions, Tue 13 – Thu 15 Oct 2026, about 4 hours each: roughly 12 hours, solo.
 - Days 1 and 2 build the whole core. If day 3 shrinks, what's left is still a complete, demoable product.
 - Day 3 is for the two "Should" features, the README and the video.
@@ -257,10 +272,10 @@ git log -p --all | grep -nE "sk-ant-(api|admin)[0-9]{2}-[A-Za-z0-9_-]{20,}|-----
 **Above the line (must ship):** M1–M6 and M9.
 
 **Drops, in the order they come up:**
-1. **Checkpoint 1** (end of day 1): M3 not merged → drop M7.
+1. **Checkpoint 1** (was: end of day 1): passed. M3 merged on 14 Oct, so M7 stays.
 2. **Checkpoint 2** (day 2): M5 past 2½ hours → single-column German layout.
-3. **Checkpoint 3** (end of day 2): M6 not merged → drop M7.
-4. **Day 3 time box:** whatever of M7 and M8 isn't merged at 90 minutes. Ratings move to the week after, before testers; paste still works without upload.
+3. **Checkpoint 3** (end of Sat 17 Oct): M6 not merged → drop M7.
+4. **M7/M8 time box (Sun 18 Oct):** whatever of M7 and M8 isn't merged at 90 minutes. Ratings move to the week after, before testers; paste still works without upload.
 
 **Already below the line (after the hackathon):**
 - The Vercel deploy and rate limiting, before the tester round.

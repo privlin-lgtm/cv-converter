@@ -1,5 +1,5 @@
 Hackathon project: CV Converter
-Paul Rivlin · Full Stack + AI (part-time, May 2026 – December 2026) · Hackathon 13–15 October 2026 · Solo
+Paul Rivlin · Full Stack + AI (part-time, May 2026 – December 2026) · Hackathon 15–20 October 2026 (started 13 October, the original start date) · Solo
 
 END GOAL
 A web app that rewrites a CV to the hiring norms of another country and explains every change it makes. It works in both directions through Israel: Israelis applying for jobs in the US, the UK or Germany, and new immigrants (olim) applying for jobs in Israel.

@@ -23,7 +23,7 @@ v1 is English in, English out. Hebrew CVs are a stretch goal.
 - **Systems:** a new public GitHub repo in Paul's account; PostgreSQL via Knex; the Anthropic Claude API (Paul holds credits); Vercel for hosting once testers start (after the hackathon). There are no existing systems to integrate with.
 
 ## Constraints
-- **Hackathon rules.** Hackathon days are Tue 13 – Thu 15 Oct 2026, about 4 hours a day, solo. No code before the event: planning documents and research notes only. Scaffolding, hooks, fixtures and seed data are written on the day. A document stating the end goal and planned functionality goes to the instructor before it starts.
+- **Hackathon rules.** The official window is Thu 15 Oct – Tue 20 Oct 2026, 18:00 Israel time, about 4 hours a day, solo. The hackathon was postponed from its original start on Tue 13 Oct; work started on 13 Oct, before the postponement was announced, and the instructor knows and has approved this. No code before the event: planning documents and research notes only. Scaffolding, hooks, fixtures and seed data are written on the day. A document stating the end goal and planned functionality goes to the instructor before it starts.
 - **Deliverables.** A public GitHub repo in Paul's own account, and a 2-minute demo video. Judged on functionality, creativity, code quality, teamwork and presentation, with quality of execution over originality.
 - **Stack.** TypeScript throughout: React with Redux Toolkit (Vite) for the front end, Node.js with Express for the API, PostgreSQL with Knex. Testing with Vitest; linting with oxlint. These are the tools the course projects used (see `DI-BootCamp`). Libraries and open-source code are allowed.
 - **Public repo, no secrets, no real CVs.** Never commit an API key or a real CV. Tests use made-up CVs only.
@@ -51,7 +51,7 @@ v1 is English in, English out. Hebrew CVs are a stretch goal.
 4. **Rules in a public repo.** The four-country seed rules will be public in the repo. Proposed: accept it for these four countries, which are compiled from public sources, and keep later country packs and upkeep in a private repo.
 
 ## Success measure
-- **Hackathon (Thu 15 Oct 2026):** a working end-to-end flow on made-up CVs in all four directions (Israel → US, UK, Germany; abroad → Israel). Every change cites a stored rule, the checks run, and Save as PDF uses the right paper size. Tests, lint and CI are green, the public repo has a README, and a 2-minute video is submitted.
+- **Hackathon (Tue 20 Oct 2026):** a working end-to-end flow on made-up CVs in all four directions (Israel → US, UK, Germany; abroad → Israel). Every change cites a stored rule, the checks run, and Save as PDF uses the right paper size. Tests, lint and CI are green, the public repo has a README, and a 2-minute video is submitted.
 - **Tester round (after the hackathon):** classmates run their own CVs and rate each result against a chatbot (better / same / worse). The pass mark is open question 1.
 - **Market test (two weeks, landing page and Paddle checkout):** passes with at least 10 paid orders and at least 3 buyers saying a chatbot wasn't enough. It fails on any of: under 5 orders, buyers saying ChatGPT was enough, or refund requests above 20%.
 

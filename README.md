@@ -7,7 +7,7 @@ It works in both directions through Israel:
 - **Olim and other newcomers:** a CV from abroad into Israeli norms.
 
 ## Status
-Being built during the Developers Institute hackathon (Full Stack + AI, part-time, May 2026 – December 2026), 13–15 October 2026. Each milestone lands as its own pull request.
+Being built during the Developers Institute hackathon (Full Stack + AI, part-time, May 2026 – December 2026), 15–20 October 2026. Work started on 13 October, the original start date, before the hackathon was postponed. Each milestone lands as its own pull request.
 
 ## How it works
 1. The country rules (photo, date of birth, date format, length, paper size, how to describe army service and more) live in PostgreSQL, each with its sources.
