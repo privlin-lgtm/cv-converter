@@ -1,6 +1,6 @@
 # CV norms research: US, UK, Germany, Israel, and Israeli army service
 
-Researched 10 Oct 2026, ahead of the Developers Institute hackathon (13–15 Oct 2026). Five parallel passes: one per country and one on presenting Israeli military and national service abroad. Each pass cited only pages it opened.
+Researched 10 Oct 2026, ahead of the Developers Institute hackathon (15–20 Oct 2026). Five parallel passes: one per country and one on presenting Israeli military and national service abroad. Each pass cited only pages it opened.
 
 **What this file is for.** On day 1 the tables below become the seed data for the `norms` table (see `intent/2026-10-10-mvp/spec.md`). Each table row is one seed row. The columns map like this:
 

@@ -1,11 +1,11 @@
 Hackathon project: CV Converter
-Paul Rivlin · Full Stack + AI (part-time, May 2026 – December 2026) · Hackathon 13–15 October 2026 · Solo
+Paul Rivlin · Full Stack + AI (part-time, May 2026 – December 2026) · Hackathon 15–20 October 2026 (started 13 October, the original start date) · Solo
 
 END GOAL
 A web app that rewrites a CV to the hiring norms of another country and explains every change it makes. It works in both directions through Israel: Israelis applying for jobs in the US, the UK or Germany, and new immigrants (olim) applying for jobs in Israel.
 
 WHY
-CV conventions differ a lot between countries: whether to include a photo or date of birth, the date format, the length and paper size, and how to describe army service. A general chatbot can rewrite a CV, but it doesn't know these rules reliably, can't say where they come from, and doesn't check its own work. In this app the rules live in a database, each with its source, and the output is checked against them. I researched the rules (about 140, with sources) before the hackathon; the code is all written during it.
+CV conventions differ a lot between countries: whether to include a photo or date of birth, the date format, the length and paper size, and how to describe army service. A general chatbot can rewrite a CV, but it doesn't know these rules reliably, can't say where they come from, and doesn't check its own work. In this app the rules live in a database, each with its source, and the output is checked against them. I researched the rules (about 140, with sources) before the hackathon; the code is all written from 13 October, the original start date, onwards.
 
 PLANNED FUNCTIONALITY
 1. Choose a direction: an Israeli CV to the US, the UK or Germany, or a CV from abroad to Israel. Optionally, say what kind of job you're applying for.
