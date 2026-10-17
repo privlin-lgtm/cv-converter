@@ -58,7 +58,7 @@ function ResultPage() {
             <button type="button" className="primary" onClick={savePdf}>
               Save as PDF
             </button>
-            <button type="button" className="primary" onClick={() => navigate('/')}>
+            <button type="button" className="outline" onClick={() => navigate('/')}>
               Edit and convert again
             </button>
           </div>
