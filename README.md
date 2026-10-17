@@ -64,7 +64,7 @@ Paul Rivlin, solo ([GitHub: privlin-lgtm](https://github.com/privlin-lgtm)).
    ```
    npm run dev
    ```
-   The client runs on port 5173 and the API on port 3001. The app opens on the Convert page; the result page is the next milestone, so a finished conversion does not show a result yet.
+   The client runs on port 5173 and the API on port 3001. The app opens on the Convert page. Paste a CV, pick a direction and click Convert; after up to a minute you land on the result page. It shows the rewritten CV on the left, laid out for the target country (for Germany, a date column, a Personal Details block and a signature line), and a panel on the right with the rule checks, questions for you, the changes with their reasons and sources, and notes. The result lives only in this browser tab: reload and you're sent back to the Convert page. Saving as PDF and rating a result come in later milestones.
 7. Run the tests and the linter:
    ```
    npm test

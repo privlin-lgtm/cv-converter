@@ -21,6 +21,17 @@ describe('test fixtures', () => {
     expect(problems).toEqual([])
   })
 
+  it('includes the five fixtures the fixture matrix runs', () => {
+    const files = readdirSync(fixturesDir).filter((file) => file.endsWith('.txt'))
+    expect(files.sort()).toEqual([
+      'de-lebenslauf.txt',
+      'il-ops-combat-reserves.txt',
+      'il-software-dev.txt',
+      'uk-olah.txt',
+      'us-resume.txt',
+    ])
+  })
+
   it('flags a fixture without the marker line', () => {
     expect(fixtureProblems('a.txt', 'Dana Levi\ndana@example.com')).toEqual([`a.txt: first line must be "${MARKER}"`])
   })

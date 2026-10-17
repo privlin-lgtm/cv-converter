@@ -100,7 +100,12 @@ describe('POST /api/convert', () => {
     expect(res.body.changes[0]).toMatchObject({ ruleKey: 'date_of_birth', status: 'confirmed' })
     expect(res.body.changes[0].why).toEqual(expect.any(String))
     expect(res.body.changes[1]).toMatchObject({ ruleKey: 'not_a_rule', why: null, sources: null, status: null })
-    expect(res.body.checks).toContainEqual({ ruleKey: 'date_of_birth', result: 'pass', detail: 'Not found' })
+    expect(res.body.checks).toContainEqual({
+      ruleKey: 'date_of_birth',
+      rule: expect.stringMatching(/\S/),
+      result: 'pass',
+      detail: 'Not found',
+    })
     expect(res.body.meta).toEqual({ model: 'fake-model', country: 'US', paperSize: 'Letter', documentName: 'Résumé' })
 
     expect(model.calls).toHaveLength(1)

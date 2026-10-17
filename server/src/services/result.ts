@@ -13,12 +13,16 @@ export interface ResultChange {
   status: Norm['status'] | null
 }
 
+export interface ResultCheck extends CheckResult {
+  rule: string
+}
+
 export interface ConversionResult {
   cv: ModelOutput['cv']
   changes: ResultChange[]
   questions: ModelOutput['questions']
   notes: ModelOutput['notes']
-  checks: CheckResult[]
+  checks: ResultCheck[]
   meta: { model: string; country: string; paperSize: Country['paperSize']; documentName: string }
 }
 
@@ -37,7 +41,7 @@ export function buildResult(output: ModelOutput, norms: Norm[], country: Country
     }),
     questions: output.questions,
     notes: output.notes,
-    checks: runChecks(norms, output.cv),
+    checks: runChecks(norms, output.cv).map((check) => ({ ...check, rule: byKey.get(check.ruleKey)!.rule })),
     meta: { model, country: country.code, paperSize: country.paperSize, documentName: country.documentName },
   }
 }

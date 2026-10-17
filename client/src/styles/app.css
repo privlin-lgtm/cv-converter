@@ -258,3 +258,279 @@ button:disabled {
     width: 100%;
   }
 }
+
+.notice {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+}
+
+.page-wide {
+  max-width: 80rem;
+}
+
+.subtitle {
+  margin: -0.5rem 0 1rem;
+  color: var(--muted);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.cv-sheet {
+  width: 100%;
+  max-width: 210mm;
+  padding: clamp(1rem, 4vw, 18mm);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #111;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.08);
+}
+
+.cv-header {
+  margin-bottom: 1rem;
+}
+
+.cv-name {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.cv-headline,
+.cv-contact {
+  margin: 0.15rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.cv-section {
+  margin-bottom: 1rem;
+}
+
+.cv-section h3 {
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.15rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #111;
+}
+
+.cv-text {
+  margin: 0 0 0.4rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.cv-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: 'title dates' 'lines lines';
+  column-gap: 1rem;
+  margin-bottom: 0.6rem;
+  break-inside: avoid;
+}
+
+.cv-title,
+.cv-dates {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.cv-title {
+  grid-area: title;
+  font-weight: 600;
+}
+
+.cv-dates {
+  grid-area: dates;
+  white-space: nowrap;
+}
+
+.cv-lines {
+  grid-area: lines;
+  margin: 0.2rem 0 0;
+  padding-left: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+.cv-sheet--tabular .cv-entry {
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  grid-template-areas: 'dates title' 'dates lines';
+}
+
+.cv-sheet--tabular .cv-dates {
+  white-space: normal;
+}
+
+.cv-sheet--tabular .cv-section--personal_details {
+  padding: 0.6rem 0.75rem;
+  background: #f4f4f4;
+  border: 1px solid #d6d6d6;
+}
+
+.cv-sheet--tabular .cv-section--personal_details .cv-entry {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'title' 'lines';
+}
+
+.cv-section--personal_details .cv-lines,
+.cv-section--signature .cv-lines {
+  padding-left: 0;
+  list-style: none;
+}
+
+.cv-section--signature {
+  margin-top: 2rem;
+}
+
+.cv-section--signature::after {
+  content: '';
+  display: block;
+  width: 14rem;
+  max-width: 100%;
+  margin-top: 2.25rem;
+  border-top: 1px solid #111;
+}
+
+.panel {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.panel .primary {
+  justify-self: start;
+}
+
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.panel h3 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.panel ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.panel .checks,
+.panel .changes,
+.panel .sources {
+  padding-left: 0;
+  list-style: none;
+}
+
+.panel p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.empty,
+.check-detail {
+  color: var(--muted);
+}
+
+.check {
+  display: grid;
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 0.6rem 0.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.check:has(.badge-flagged) {
+  background: var(--danger-soft);
+}
+
+.check-rule {
+  font-size: 0.9rem;
+}
+
+.check-detail {
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-block;
+  align-self: start;
+  justify-self: start;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid;
+  border-radius: 999px;
+}
+
+.badge-pass {
+  color: #14532d;
+  background: #e6f4ea;
+  border-color: #9fd1ac;
+}
+
+.badge-flagged {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-color: var(--danger-line);
+}
+
+.badge-practice {
+  margin-left: 0.5rem;
+  color: #5b4a00;
+  background: #fff6d6;
+  border-color: #e5cf7a;
+}
+
+.change {
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.change-what {
+  font-weight: 600;
+}
+
+.change-why {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 56rem) {
+  .result-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 36rem) {
+  .cv-sheet--tabular .cv-entry {
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+  }
+
+  .panel {
+    padding: 1rem;
+  }
+}

@@ -17,10 +17,12 @@ npm workspaces: `client/` (Vite, React 19, Redux Toolkit, React Router) and `ser
 |---|---|
 | `npm run dev` | `[client] ➜  Local:   http://localhost:5173/` and `[server] API listening on http://localhost:3001` |
 | `npm run build` | `tsc -p tsconfig.build.json` silent, then `✓ built in …ms` from Vite |
-| `npm test` | `Test Files  8 passed (8)` (server), then `Test Files  2 passed (2)` (client) |
+| `npm test` | `Test Files  8 passed (8)` (server), then `Test Files  3 passed (3)` (client) |
 | `npm run lint` | `oxlint --deny-warnings && tsc …` for each workspace, no output, exit 0 |
 | `npm run db:migrate` | `Already up to date.` or `Batch N: ran N migration(s): …` |
 | `npm run db:seed` | `Ran N seed file(s): …` |
+
+Start the app with `npm run dev` from a terminal. The desktop app's preview launcher sets `PORT=5173`, which moves the API off 3001 and breaks the client's proxy.
 
 Server tests use `DATABASE_URL_TEST` only: `server/vitest.config.ts` points `DATABASE_URL` at it,
 and `test/globalSetup.ts` migrates and seeds it before the run. Test files run one at a time.
