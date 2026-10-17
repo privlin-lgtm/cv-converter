@@ -215,6 +215,13 @@ button:disabled {
   opacity: 0.5;
 }
 
+.outline {
+  padding: 0.8rem 1.5rem;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+}
+
 .alert {
   display: flex;
   flex-wrap: wrap;
@@ -254,7 +261,8 @@ button:disabled {
     max-width: none;
   }
 
-  .primary {
+  .primary,
+  .outline {
     width: 100%;
   }
 }
@@ -412,6 +420,24 @@ button:disabled {
 
 .panel .primary {
   justify-self: start;
+}
+
+.panel .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.warning {
+  padding: 0.75rem 1rem;
+  color: #5b4a00;
+  background: #fff6d6;
+  border-left: 4px solid #e5cf7a;
+  border-radius: 6px;
+}
+
+.panel .warning ul {
+  margin-top: 0.4rem;
 }
 
 .panel h2 {
