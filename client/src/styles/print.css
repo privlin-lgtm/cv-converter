@@ -1,0 +1,24 @@
+@media print {
+  body:has(.cv-sheet) *:not(.cv-sheet, .cv-sheet *, :has(.cv-sheet)) {
+    display: none;
+  }
+
+  :has(.cv-sheet) {
+    display: block;
+    height: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    background: #fff;
+  }
+
+  .cv-sheet {
+    width: auto;
+    max-width: none;
+    padding: 18mm;
+    border: 0;
+    box-shadow: none;
+    box-decoration-break: clone;
+  }
+}

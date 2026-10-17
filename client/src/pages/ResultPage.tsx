@@ -7,23 +7,61 @@ const NOT_SAVED_NOTICE = "Results aren't saved, by design. Paste your CV again t
 
 const KINDS: ResultChange['kind'][] = ['removed', 'added', 'reworded', 'reordered', 'reformatted', 'flagged']
 
+const PLACEHOLDER = /\[[^[\]\n]+\]/g
+const UNSAFE_IN_FILE_NAME = /[\\/:*?"<>|\p{Cc}]/gu
+
 function ResultPage() {
   const navigate = useNavigate()
   const result = useAppSelector((state) => state.conversion.result)
   if (!result) return <Navigate to="/" replace state={{ notice: NOT_SAVED_NOTICE }} />
 
   const { cv, checks, questions, changes, notes, meta } = result
+  const { name, headline, contactLines } = cv.header
+  const cvText = [
+    name,
+    headline,
+    ...contactLines,
+    ...cv.sections.flatMap(({ heading, text, entries }) => [
+      heading,
+      text,
+      ...entries.flatMap((entry) => [entry.dates, entry.title, entry.organisation, entry.location, ...entry.lines]),
+    ]),
+  ].join('\n')
+  const placeholders = [...new Set(cvText.match(PLACEHOLDER))]
+
+  function savePdf() {
+    const pageTitle = document.title
+    document.title = [...name.replace(UNSAFE_IN_FILE_NAME, '').split(/\s+/).filter(Boolean), 'CV'].join('-')
+    window.print()
+    document.title = pageTitle
+  }
 
   return (
     <main className="page page-wide">
+      <style>{`@page { size: ${meta.paperSize}; margin: 0 }`}</style>
       <h1>Your result</h1>
       <p className="subtitle">Rewritten as a {meta.documentName}.</p>
       <div className="result-grid">
         <CvSheet cv={cv} layout={meta.country === 'DE' ? 'tabular' : 'single'} />
         <aside className="panel">
-          <button type="button" className="primary" onClick={() => navigate('/')}>
-            Edit and convert again
-          </button>
+          {placeholders.length > 0 && (
+            <div className="warning" role="status">
+              <p>These placeholders need filling in before you send the CV. Saving as PDF still works, but they print as they are.</p>
+              <ul>
+                {placeholders.map((placeholder) => (
+                  <li key={placeholder}>{placeholder}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="actions">
+            <button type="button" className="primary" onClick={savePdf}>
+              Save as PDF
+            </button>
+            <button type="button" className="primary" onClick={() => navigate('/')}>
+              Edit and convert again
+            </button>
+          </div>
 
           <section>
             <h2>Checks</h2>

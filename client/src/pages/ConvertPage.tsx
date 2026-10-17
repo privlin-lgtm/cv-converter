@@ -1,4 +1,4 @@
-import { useEffect, type SyntheticEvent } from 'react'
+import { useEffect, useState, type SyntheticEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   convertCv,
@@ -30,13 +30,18 @@ const formatCount = (n: number) => n.toLocaleString('en')
 function ConvertPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const notice = (useLocation().state as { notice?: string } | null)?.notice
+  const { state } = useLocation()
+  const [notice] = useState(() => (state as { notice?: string } | null)?.notice)
   const countries = useAppSelector((state) => state.countries)
   const { from, to, text, targetRole, status, error } = useAppSelector((state) => state.conversion)
 
   useEffect(() => {
     void dispatch(loadCountries())
   }, [dispatch])
+
+  useEffect(() => {
+    if (state) navigate('/', { replace: true, state: null })
+  }, [state, navigate])
 
   const countriesReady = countries.status === 'loaded'
   const targets = TARGET_CODES.flatMap((code) => countries.items.filter((country) => country.code === code))
