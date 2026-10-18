@@ -35,14 +35,15 @@ Rules and citations:
 
 Output:
 - "cv" is the rewritten CV. Put each job, degree or service period in "entries", with its dates in "dates" in the target's date format. Use "text" for a section's prose (such as a summary) and "lines" for an entry's bullets. Use "" or [] for anything that doesn't apply.
+- In an entry, "title" is the role only. "organisation" names the employer once; never repeat the employer in the title. For army service, "organisation" holds "Israel Defense Forces (IDF)", the unit's function and "mandatory military service" once.
 - "changes" lists every change you made. "what" says briefly what changed; don't explain why, because the app shows the rule's reason.
 - "questions" lists facts you need from the user. "notes" lists anything else the user should know.`
 
 // The researcher's example rewrites from research/cv-norms-2026-10.md, sent for Israel → abroad only.
 export const ARMY_EXAMPLES = [
-  'Tech role with sensitive content. Before: "2014–2017 צה"ל – ממר"ם, סמ"ר, מתכנתת במערכת [codename] לניטור..." After: "Software Developer, Israel Defense Forces (mandatory military service), 2014–2017. Built and maintained internal C#/.NET applications used by about 3,000 personnel; one of 6 developers on an agile team; owned release testing."',
-  'Combat role for a non-military job. Before: "Military Service: Golani, Samal, Mefaked Kita, 2016–2019". After: "Squad Leader (Sergeant), Infantry, Israel Defense Forces (mandatory service), 2016–2019. Led, trained and was responsible for the safety of 10 soldiers; planned weekly training schedules and logistics under tight deadlines."',
-  'National service. Before: "שירות לאומי – בי"ח, מחלקת ילדים, 2019–2021". After: "National Service (civilian alternative to military service, Israel), paediatric ward, [hospital name], 2019–2021. About 30 hrs/week supporting patients and families; trained 4 new volunteers."',
+  'Tech role with sensitive content. Before: "2014–2017 צה"ל – ממר"ם, סמ"ר, מתכנתת במערכת [codename] לניטור..." After: title "Software Developer"; organisation "Israel Defense Forces (IDF), computing and IT unit, mandatory military service"; location "Israel"; dates "2014–2017"; bullet "Built and maintained internal C#/.NET applications used by about 3,000 personnel; one of 6 developers on an agile team; owned release testing."',
+  'Combat role for a non-military job. Before: "Military Service: Golani, Samal, Mefaked Kita, 2016–2019". After: title "Squad Leader (Sergeant)"; organisation "Israel Defense Forces (IDF), Infantry, mandatory military service"; location "Israel"; dates "2016–2019"; bullet "Led, trained and was responsible for the safety of 10 soldiers; planned weekly training schedules and logistics under tight deadlines."',
+  'National service. Before: "שירות לאומי – בי"ח, מחלקת ילדים, 2019–2021". After: title "National Service, paediatric ward"; organisation "[hospital name], civilian alternative to military service"; location "Israel"; dates "2019–2021"; bullet "About 30 hrs/week supporting patients and families; trained 4 new volunteers."',
 ]
 
 export function buildPrompt({ from, targetRole, country, norms, text }: PromptInput): Prompt {

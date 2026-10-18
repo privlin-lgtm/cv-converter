@@ -305,7 +305,7 @@ The `check_def` column holds JSON with one of four types. Only these rules get a
 | US | document_name | `absent` /curriculum vitae/i |
 | US | date_of_birth | `absent` /\b(date of birth\|DOB\|born on)\b/i |
 | US | personal_status | `absent` /\b(married\|single\|divorced\|children)\b/i |
-| US | date_format | `absent` /\b\d{1,2}[./]\d{1,2}[./]\d{2,4}\b/ |
+| US | date_format | `all_dates_match` /^(Jan\|Feb\|Mar\|Apr\|May\|Jun\|Jul\|Aug\|Sep\|Oct\|Nov\|Dec) (19\|20)\d{2}$/ (allowed word: "Present") |
 | US | length_pages | `max_words` 1,100 (heuristic for two pages) |
 | US | us_veteran_status | `absent` /\bveteran\b/i |
 | US, GB, DE | military_jargon | `absent` /[\u0590-\u05FF]\|\b(Tzahal\|Mamram\|Bakum\|Tironut\|Sadir\|Keva)\b/i (one regex) |

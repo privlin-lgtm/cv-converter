@@ -170,7 +170,11 @@ const us: NormRow[] = [
       'https://careerservices.fas.harvard.edu/resources/hes-create-impactful-resumes-and-cover-letters/',
     ],
     status: 'unverified',
-    check: { type: 'absent', pattern: '\\b\\d{1,2}[./]\\d{1,2}[./]\\d{2,4}\\b' },
+    check: {
+      type: 'all_dates_match',
+      pattern: '^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (19|20)\\d{2}$',
+      allow: ['^Present$'],
+    },
   },
   {
     key: 'bullet_style',
@@ -448,7 +452,11 @@ const gb: NormRow[] = [
       'https://www.careers.ox.ac.uk/cvs',
     ],
     status: 'unverified',
-    check: { type: 'absent', pattern: '\\b\\d{1,2}[./]\\d{1,2}[./]\\d{2,4}\\b' },
+    check: {
+      type: 'all_dates_match',
+      pattern: '^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (19|20)\\d{2}$',
+      allow: ['^Present$'],
+    },
   },
   {
     key: 'bullets',

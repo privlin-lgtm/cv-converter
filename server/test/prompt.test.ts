@@ -96,6 +96,24 @@ describe('buildPrompt', () => {
     expect(SYSTEM_PROMPT).toContain('and ask about it in "questions"')
   })
 
+  it('says an entry title is the role only and the organisation names the employer once', () => {
+    expect(SYSTEM_PROMPT).toContain('In an entry, "title" is the role only.')
+    expect(SYSTEM_PROMPT).toContain('"organisation" names the employer once; never repeat the employer in the title.')
+    expect(SYSTEM_PROMPT).toContain(
+      'For army service, "organisation" holds "Israel Defense Forces (IDF)", the unit\'s function and "mandatory military service" once.',
+    )
+  })
+
+  it('shows every army example with the title and the organisation apart, naming the employer once', () => {
+    for (const example of ARMY_EXAMPLES) {
+      expect(example).toContain('After: title "')
+      expect(example).toContain('; organisation "')
+      const after = example.slice(example.indexOf('After:'))
+      expect((after.match(/Israel Defense Forces/g) ?? []).length).toBeLessThanOrEqual(1)
+      expect((after.match(/mandatory military service/g) ?? []).length).toBeLessThanOrEqual(1)
+    }
+  })
+
   it('sends the honesty rules as the system prompt, over the target rules', async () => {
     const { country, norms } = await countryAndNorms('IL')
     const prompt = buildPrompt({ from: 'ABROAD', country, norms, text: cvText })
