@@ -1191,7 +1191,7 @@ const army: ArmyRow[] = [
   {
     key: 'military_context_line',
     targets: ['US', 'GB', 'DE'],
-    rule: 'Add once, in the entry title or first line: "Israel Defense Forces (mandatory military service)". For officers or long-service personnel, add "extended service as officer".',
+    rule: 'Add once, in the entry\'s organisation: "Israel Defense Forces (IDF)" and "mandatory military service". For officers or long-service personnel, add "extended service as officer".',
     why: "Foreign readers don't know Israeli service is compulsory, so without this it can look like a career choice.",
     sources: [
       'https://www.nbn.org.il/?p=114222',
