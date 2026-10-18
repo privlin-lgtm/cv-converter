@@ -16,3 +16,15 @@ export const convertRequestSchema = z
   })
 
 export type ConvertRequest = z.infer<typeof convertRequestSchema>
+
+export const MAX_COMMENT_CHARS = 500
+
+export const ratingRequestSchema = z.strictObject({
+  from: z.enum(['IL', 'ABROAD']),
+  to: z.enum(['US', 'GB', 'DE', 'IL']),
+  vsChatbot: z.enum(['better', 'same', 'worse', 'not_tried']),
+  score: z.int().min(1).max(5),
+  comment: z.string().trim().max(MAX_COMMENT_CHARS).optional(),
+})
+
+export type RatingRequest = z.infer<typeof ratingRequestSchema>

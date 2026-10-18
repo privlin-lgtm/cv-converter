@@ -1,5 +1,6 @@
 import { Navigate, useNavigate } from 'react-router-dom'
 import CvSheet from '../components/CvSheet.tsx'
+import RatingForm from '../components/RatingForm.tsx'
 import type { ResultChange } from '../features/conversion/types.ts'
 import { useAppSelector } from '../hooks.ts'
 
@@ -62,6 +63,8 @@ function ResultPage() {
               Edit and convert again
             </button>
           </div>
+
+          <RatingForm />
 
           <section>
             <h2>Checks</h2>

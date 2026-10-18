@@ -2,6 +2,7 @@ import express, { type ErrorRequestHandler } from 'express'
 import { convertRouter } from './routes/convert.js'
 import { countriesRouter } from './routes/countries.js'
 import { healthRouter } from './routes/health.js'
+import { ratingsRouter } from './routes/ratings.js'
 import type { ModelOptions } from './services/model.js'
 
 // Answers malformed or oversized JSON bodies here, so Express's default handler never logs them.
@@ -22,6 +23,7 @@ export function createApp(modelOptions: ModelOptions = {}) {
   app.use('/api', healthRouter)
   app.use('/api', countriesRouter)
   app.use('/api', convertRouter(modelOptions))
+  app.use('/api', ratingsRouter)
   app.use(bodyErrors)
   return app
 }
