@@ -1,4 +1,6 @@
-import { fireEvent, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { Provider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from '../App.tsx'
 import { convertCv, setText } from '../features/conversion/conversionSlice.ts'
@@ -198,6 +200,95 @@ describe('CV preview', () => {
   })
 })
 
+describe('Save as PDF', () => {
+  it('sets the page size to Letter for the United States and A4 for Germany', () => {
+    const us = renderResult(US_RESULT)
+    expect(us.container.querySelector('style')).toHaveTextContent('@page { size: Letter; margin: 0 }')
+    us.unmount()
+
+    const de = renderResult(DE_RESULT)
+    expect(de.container.querySelector('style')).toHaveTextContent('@page { size: A4; margin: 0 }')
+  })
+
+  it('names the file after the CV owner while printing and restores the title after', () => {
+    document.title = 'CV Converter'
+    let titleWhilePrinting = ''
+    const print = vi.fn(() => {
+      titleWhilePrinting = document.title
+    })
+    vi.stubGlobal('print', print)
+    renderResult(US_RESULT)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save as PDF' }))
+
+    expect(print).toHaveBeenCalledOnce()
+    expect(titleWhilePrinting).toBe('Dana-Example-CV')
+    expect(document.title).toBe('CV Converter')
+  })
+
+  it('leaves characters that are unsafe in file names out of the title', () => {
+    let titleWhilePrinting = ''
+    vi.stubGlobal('print', () => {
+      titleWhilePrinting = document.title
+    })
+    renderResult({ ...US_RESULT, cv: { ...US_RESULT.cv, header: { ...US_RESULT.cv.header, name: 'Dana "Dee" Ex/ample?' } } })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save as PDF' }))
+
+    expect(titleWhilePrinting).toBe('Dana-Dee-Example-CV')
+  })
+})
+
+describe('placeholder notice', () => {
+  it('lists each bracketed placeholder once, above Save as PDF, and does not block printing', () => {
+    const print = vi.fn()
+    vi.stubGlobal('print', print)
+    renderResult({
+      ...US_RESULT,
+      cv: {
+        header: { ...US_RESULT.cv.header, contactLines: ['[City]'] },
+        sections: [
+          {
+            kind: 'experience',
+            heading: 'Experience',
+            text: '',
+            entries: [
+              {
+                dates: '[MM]/2019 - [MM]/2021',
+                title: 'Senior Developer',
+                organisation: 'Kestrel',
+                location: '',
+                lines: ['Led [Team size] engineers'],
+              },
+            ],
+          },
+        ],
+      },
+    })
+    const notice = screen.getByRole('status')
+    const save = screen.getByRole('button', { name: 'Save as PDF' })
+
+    expect(notice).toHaveTextContent('need filling in before you send the CV')
+    expect(within(notice).getAllByRole('listitem').map((item) => item.textContent)).toEqual(['[City]', '[MM]', '[Team size]'])
+    expect(notice.compareDocumentPosition(save) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(save).toBeEnabled()
+    fireEvent.click(save)
+    expect(print).toHaveBeenCalledOnce()
+  })
+
+  it('counts the signature placeholder in a German CV', () => {
+    renderResult(DE_RESULT)
+
+    expect(within(screen.getByRole('status')).getByText('[Signature]')).toBeInTheDocument()
+  })
+
+  it('is absent when the CV has no placeholders', () => {
+    renderResult(US_RESULT)
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+})
+
 describe('leaving the page', () => {
   it('redirects a reload with no result to / and says why', async () => {
     stubFetch(countriesOk)
@@ -205,6 +296,28 @@ describe('leaving the page', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'CV Converter' })).toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent("Results aren't saved, by design. Paste your CV again to convert it.")
+    await screen.findByRole('option', { name: 'Germany' })
+  })
+
+  it('does not show the notice again when / is reloaded', async () => {
+    stubFetch(countriesOk)
+    window.history.pushState(null, '', '/result')
+    const mount = () =>
+      render(
+        <Provider store={makeStore()}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </Provider>,
+      )
+
+    const first = mount()
+    expect(screen.getByRole('status')).toHaveTextContent("Results aren't saved, by design. Paste your CV again to convert it.")
+    first.unmount()
+
+    mount()
+    expect(window.location.pathname).toBe('/')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
     await screen.findByRole('option', { name: 'Germany' })
   })
 
