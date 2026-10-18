@@ -170,7 +170,11 @@ const us: NormRow[] = [
       'https://careerservices.fas.harvard.edu/resources/hes-create-impactful-resumes-and-cover-letters/',
     ],
     status: 'unverified',
-    check: { type: 'absent', pattern: '\\b\\d{1,2}[./]\\d{1,2}[./]\\d{2,4}\\b' },
+    check: {
+      type: 'all_dates_match',
+      pattern: '^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (19|20)\\d{2}$',
+      allow: ['^Present$'],
+    },
   },
   {
     key: 'bullet_style',
@@ -448,7 +452,11 @@ const gb: NormRow[] = [
       'https://www.careers.ox.ac.uk/cvs',
     ],
     status: 'unverified',
-    check: { type: 'absent', pattern: '\\b\\d{1,2}[./]\\d{1,2}[./]\\d{2,4}\\b' },
+    check: {
+      type: 'all_dates_match',
+      pattern: '^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (19|20)\\d{2}$',
+      allow: ['^Present$'],
+    },
   },
   {
     key: 'bullets',
@@ -1183,7 +1191,7 @@ const army: ArmyRow[] = [
   {
     key: 'military_context_line',
     targets: ['US', 'GB', 'DE'],
-    rule: 'Add once, in the entry title or first line: "Israel Defense Forces (mandatory military service)". For officers or long-service personnel, add "extended service as officer".',
+    rule: 'Add once, in the entry\'s organisation: "Israel Defense Forces (IDF)" and "mandatory military service". For officers or long-service personnel, add "extended service as officer".',
     why: "Foreign readers don't know Israeli service is compulsory, so without this it can look like a career choice.",
     sources: [
       'https://www.nbn.org.il/?p=114222',

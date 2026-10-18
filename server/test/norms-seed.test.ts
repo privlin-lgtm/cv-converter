@@ -51,6 +51,29 @@ describe('norms seed', () => {
     expect(runCheck('language_levels', row.check_def, cvWith('Cut idle hours', 'English ★★★★☆')).result).toBe('flagged')
   })
 
+  it.each(['US', 'GB'])('the %s date check flags year-only and numeric dates and accepts Mon YYYY with Present', async (code) => {
+    const row: { check_def: CheckDef } = await db('norms')
+      .where({ country_code: code, key: 'date_format' })
+      .first('check_def')
+    const cvWith = (dates: string[]): Cv => ({
+      header: { name: 'Dana Example', headline: '', contactLines: [] },
+      sections: [
+        {
+          kind: 'experience',
+          heading: 'Experience',
+          text: '',
+          entries: dates.map((value) => ({ dates: value, title: '', organisation: '', location: '', lines: [] })),
+        },
+      ],
+    })
+
+    expect(row.check_def.type).toBe('all_dates_match')
+    expect(runCheck('date_format', row.check_def, cvWith(['Mar 2021 – Aug 2024', 'Sep 2024 – Present'])).result).toBe('pass')
+    expect(runCheck('date_format', row.check_def, cvWith(['2021 – 2024'])).result).toBe('flagged')
+    expect(runCheck('date_format', row.check_def, cvWith(['03/2021 – 08/2024'])).result).toBe('flagged')
+    expect(runCheck('date_format', row.check_def, cvWith(['Mar 2021 – Aug 2024', '2019'])).result).toBe('flagged')
+  })
+
   it('rejects an unknown check type and an invalid pattern', () => {
     expect(checkDefSchema.safeParse({ type: 'min_words', max: 10 }).success).toBe(false)
     expect(checkDefSchema.safeParse({ type: 'absent', pattern: '(' }).success).toBe(false)
