@@ -64,8 +64,6 @@ function ResultPage() {
             </button>
           </div>
 
-          <RatingForm />
-
           <section>
             <h2>Checks</h2>
             <ul className="checks">
@@ -143,6 +141,8 @@ function ResultPage() {
               <p className="empty">None.</p>
             )}
           </section>
+
+          <RatingForm />
         </aside>
       </div>
     </main>

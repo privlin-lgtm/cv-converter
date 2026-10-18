@@ -27,7 +27,7 @@ afterEach(() => {
 })
 
 describe('rating form', () => {
-  it('asks the question with four choices and a 1–5 score, below the action buttons', () => {
+  it('asks the question with four choices and a 1–5 score, at the end of the side panel after the notes', () => {
     renderRating()
     const question = screen.getByRole('group', {
       name: 'Compared with pasting your CV into ChatGPT or another chatbot, this was:',
@@ -43,8 +43,9 @@ describe('rating form', () => {
     expect(within(score).getAllByRole('radio').map((radio) => radio.closest('label')?.textContent)).toEqual(['1', '2', '3', '4', '5'])
     expect(screen.getByText("Please don't include personal details.")).toBeInTheDocument()
     const heading = screen.getByRole('heading', { name: 'Rate this result' })
-    const edit = screen.getByRole('button', { name: 'Edit and convert again' })
-    expect(edit.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    const notes = screen.getByRole('heading', { name: 'Notes' })
+    expect(notes.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(screen.getAllByRole('heading', { level: 2 }).at(-1)).toBe(heading)
   })
 
   it('counts the comment and keeps Send rating disabled until a choice and a score are picked', () => {

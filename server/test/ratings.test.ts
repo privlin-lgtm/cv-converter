@@ -74,4 +74,22 @@ describe('POST /api/ratings', () => {
     expect(res.status).toBe(400)
     expect(await db('ratings')).toHaveLength(0)
   })
+
+  it.each([
+    { from: 'IL', to: 'IL' },
+    { from: 'ABROAD', to: 'US' },
+    { from: 'ABROAD', to: 'GB' },
+    { from: 'ABROAD', to: 'DE' },
+  ])('returns 400 and stores nothing for the pair $from to $to', async (pair) => {
+    const res = await post({ ...valid, ...pair })
+
+    expect(res.status).toBe(400)
+    expect(await db('ratings')).toHaveLength(0)
+  })
+
+  it('accepts ABROAD to IL', async () => {
+    const res = await post({ ...valid, from: 'ABROAD', to: 'IL' })
+
+    expect(res.status).toBe(201)
+  })
 })
