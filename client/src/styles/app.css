@@ -560,3 +560,24 @@ button:disabled {
     padding: 1rem;
   }
 }
+
+.rating fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rating .scores {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.rating .scores .choice {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: var(--muted);
+}

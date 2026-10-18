@@ -142,7 +142,7 @@ describe('checks panel', () => {
     renderResult(US_RESULT)
 
     const parts = screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent)
-    expect(parts.slice(-4)).toEqual(['Checks', 'Questions for you', 'Changes', 'Notes'])
+    expect(parts.slice(-5)).toEqual(['Checks', 'Questions for you', 'Changes', 'Notes', 'Rate this result'])
     expect(screen.getByText('Are you authorised to work in the US?')).toBeInTheDocument()
     expect(screen.getByText('Assumed a backend developer role.')).toBeInTheDocument()
   })

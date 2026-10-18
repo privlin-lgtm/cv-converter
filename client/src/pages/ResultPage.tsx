@@ -1,5 +1,6 @@
 import { Navigate, useNavigate } from 'react-router-dom'
 import CvSheet from '../components/CvSheet.tsx'
+import RatingForm from '../components/RatingForm.tsx'
 import type { ResultChange } from '../features/conversion/types.ts'
 import { useAppSelector } from '../hooks.ts'
 
@@ -140,6 +141,8 @@ function ResultPage() {
               <p className="empty">None.</p>
             )}
           </section>
+
+          <RatingForm />
         </aside>
       </div>
     </main>
