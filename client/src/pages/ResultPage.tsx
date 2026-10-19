@@ -9,6 +9,7 @@ const NOT_SAVED_NOTICE = "Results aren't saved, by design. Paste your CV again t
 const KINDS: ResultChange['kind'][] = ['removed', 'added', 'reworded', 'reordered', 'reformatted', 'flagged']
 
 const PLACEHOLDER = /\[[^[\]\n]+\]/g
+const BARE_DATE_PLACEHOLDER = /\b(?:MM|DD|YYYY)\b/g
 const UNSAFE_IN_FILE_NAME = /[\\/:*?"<>|\p{Cc}]/gu
 
 function ResultPage() {
@@ -28,7 +29,10 @@ function ResultPage() {
       ...entries.flatMap((entry) => [entry.dates, entry.title, entry.organisation, entry.location, ...entry.lines]),
     ]),
   ].join('\n')
-  const placeholders = [...new Set(cvText.match(PLACEHOLDER))]
+  const bareDatePlaceholders = cv.sections.flatMap(({ entries }) =>
+    entries.flatMap((entry) => entry.dates.replace(PLACEHOLDER, ' ').match(BARE_DATE_PLACEHOLDER) ?? []),
+  )
+  const placeholders = [...new Set([...(cvText.match(PLACEHOLDER) ?? []), ...bareDatePlaceholders])]
 
   function savePdf() {
     const pageTitle = document.title
