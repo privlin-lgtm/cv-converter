@@ -277,6 +277,7 @@ git log -p --all | grep -nE "sk-ant-(api|admin)[0-9]{2}-[A-Za-z0-9_-]{20,}|-----
 2. **Checkpoint 2** (day 2): M5 past 2½ hours → single-column German layout.
 3. **Checkpoint 3** (end of Sat 17 Oct): M6 not merged → drop M7.
 4. **M7/M8 time box (Sun 18 Oct):** whatever of M7 and M8 isn't merged at 90 minutes. Ratings move to the week after, before testers; paste still works without upload.
+   - **Outcome:** M7 (upload) was dropped at the 18 Oct time box. M8 (ratings) shipped.
 
 **Already below the line (after the hackathon):**
 - The Vercel deploy and rate limiting, before the tester round.
