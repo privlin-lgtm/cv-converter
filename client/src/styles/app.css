@@ -385,7 +385,8 @@ button:disabled {
   border: 1px solid #d6d6d6;
 }
 
-.cv-sheet--tabular .cv-section--personal_details .cv-entry {
+.cv-sheet--tabular .cv-section--personal_details .cv-entry,
+.cv-sheet--tabular .cv-section--signature .cv-entry {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: 'title' 'lines';
 }
