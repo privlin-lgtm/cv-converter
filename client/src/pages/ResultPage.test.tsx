@@ -287,6 +287,47 @@ describe('placeholder notice', () => {
 
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
+
+  it.each([
+    ['MM/2021 – Present', ['MM']],
+    ['[MM]/2021', ['[MM]']],
+  ])('lists the dates "%s" as %j', (dates, listed) => {
+    renderResult({
+      ...US_RESULT,
+      cv: {
+        ...US_RESULT.cv,
+        sections: [
+          {
+            kind: 'experience',
+            heading: 'Experience',
+            text: '',
+            entries: [{ dates, title: 'Senior Developer', organisation: 'Kestrel', location: '', lines: [] }],
+          },
+        ],
+      },
+    })
+
+    expect(within(screen.getByRole('status')).getAllByRole('listitem').map((item) => item.textContent)).toEqual(listed)
+  })
+
+  it('lists nothing for the dates "03/2021"', () => {
+    renderResult({
+      ...US_RESULT,
+      cv: {
+        ...US_RESULT.cv,
+        sections: [
+          {
+            kind: 'experience',
+            heading: 'Experience',
+            text: '',
+            entries: [{ dates: '03/2021', title: 'Senior Developer', organisation: 'Kestrel', location: '', lines: [] }],
+          },
+        ],
+      },
+    })
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
 })
 
 describe('leaving the page', () => {
