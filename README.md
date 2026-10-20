@@ -8,6 +8,10 @@ It works in both directions through Israel:
 
 ![The result page for an Israeli CV rewritten as a German Lebenslauf: the CV with a date column on the left, and the placeholder notice and rule checks on the right](docs/screens/readme-result-de-1280.png)
 
+## Demo video
+- Watch online: [Google Drive](https://drive.google.com/file/d/1eXZ1qOJSyCnlHD-ZblDUQSlS_VP8j-7t/view?usp=sharing) (2 minutes, recorded from real runs of the app on the fictional test CVs)
+- The file itself: [docs/demo/cv-converter-demo.mp4](docs/demo/cv-converter-demo.mp4)
+
 ## Status
 Built during the Developers Institute hackathon (Full Stack + AI, part-time, May 2026 – December 2026), 15–20 October 2026. Work started on 13 October, the original start date, before the hackathon was postponed. Each milestone landed as its own pull request.
 
