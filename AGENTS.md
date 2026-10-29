@@ -17,7 +17,7 @@ npm workspaces: `client/` (Vite, React 19, Redux Toolkit, React Router) and `ser
 |---|---|
 | `npm run dev` | `[client] ➜  Local:   http://localhost:5173/` and `[server] API listening on http://localhost:3001` |
 | `npm run build` | `tsc -p tsconfig.build.json` silent, then `✓ built in …ms` from Vite |
-| `npm test` | `Test Files  9 passed (9)` (server), then `Test Files  4 passed (4)` (client) |
+| `npm test` | `Test Files  10 passed (10)` (server), then `Test Files  4 passed (4)` (client) |
 | `npm run lint` | `oxlint --deny-warnings && tsc …` for each workspace, no output, exit 0 |
 | `npm run db:migrate` | `Already up to date.` or `Batch N: ran N migration(s): …` |
 | `npm run db:seed` | `Ran N seed file(s): …` |

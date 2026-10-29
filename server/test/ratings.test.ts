@@ -14,6 +14,7 @@ beforeEach(() => {
 afterEach(async () => {
   vi.unstubAllEnvs()
   await db('ratings').del()
+  await db('rate_limits').del()
 })
 
 const valid = { from: 'IL', to: 'US', vsChatbot: 'better', score: 4, comment: 'Clear and quick.' }

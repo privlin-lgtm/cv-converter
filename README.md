@@ -71,7 +71,7 @@ Paul Rivlin, solo ([GitHub: privlin-lgtm](https://github.com/privlin-lgtm)).
    ```
    Copy-Item server/.env.example server/.env
    ```
-   Then open `server/.env` and fill in `ANTHROPIC_API_KEY`, `DATABASE_URL` (the `cv_converter_dev` database) and `DATABASE_URL_TEST` (the `cv_converter_test` database). Each database URL is `postgres://`, then your PostgreSQL user and password, then `@localhost:5432/` and the database name. `ANTHROPIC_MODEL` and `PORT` already have values. `server/.env` is git-ignored; never commit it.
+   Then open `server/.env` and fill in `ANTHROPIC_API_KEY`, `DATABASE_URL` (the `cv_converter_dev` database) and `DATABASE_URL_TEST` (the `cv_converter_test` database). Each database URL is `postgres://`, then your PostgreSQL user and password, then `@localhost:5432/` and the database name. Set `RATE_LIMIT_SALT` to a long random string (the comment above it in the file shows how to make one). `ANTHROPIC_MODEL`, `PORT` and the other rate limit values already have values. `server/.env` is git-ignored; never commit it.
 5. Create the tables and load the country rules into the dev database:
    ```
    npm run db:migrate
@@ -88,6 +88,21 @@ Paul Rivlin, solo ([GitHub: privlin-lgtm](https://github.com/privlin-lgtm)).
    npm run lint
    ```
    The tests use only the `cv_converter_test` database (`DATABASE_URL_TEST`), which they migrate and seed themselves before the run. They use a fake model, so they need no `ANTHROPIC_API_KEY` and make no calls to the Claude API. Only pressing Convert in the running app calls it.
+
+## Deploy to Vercel
+The repo deploys as one Vercel project: `vercel.json` builds the server and the client with `npm run build`, serves the client from `client/dist`, and sends every `/api/...` request to the Express app through `api/index.js`. It works the same on the Hobby and the Pro plan. Hobby is for non-commercial use only, so the paid market test needs Pro or another host.
+
+1. Create a Postgres database (for example Neon from the Vercel Marketplace) and use its pooled connection URL.
+2. Import the repo in Vercel with the repo root as the root directory. Leave the framework preset, build and output settings to `vercel.json`.
+3. Add these environment variables to the project: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `DATABASE_URL`, `RATE_LIMIT_SALT` (a long random string, different from your local one) and `TRUST_PROXY_HOPS=1`, so each visitor's IP address is counted on its own. `RATE_LIMIT_CONVERT`, `RATE_LIMIT_RATINGS` and `RATE_LIMIT_WINDOW_MINUTES` are optional; the defaults are 10 conversions and 30 ratings per IP address every 60 minutes.
+4. From your machine, create the tables and load the rules in the production database, with `DATABASE_URL` set to its URL:
+   ```
+   npm run db:migrate
+   npm run db:seed
+   ```
+5. Deploy, then open `/api/health` on the new URL; it answers `{"ok":true,"db":true}`.
+
+A client over the limit gets a 429 with a `Retry-After` header, and the Convert page shows the message. The limit is a counter per hashed IP address in the `rate_limits` table, so it holds across serverless instances; it stores no CV text and no plain IP address. Also set a monthly spend limit in the Anthropic Console.
 
 ## Limitations
 - English in and out only.

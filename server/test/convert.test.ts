@@ -86,8 +86,9 @@ beforeEach(() => {
   log = vi.spyOn(console, 'log').mockImplementation(() => {})
   error = vi.spyOn(console, 'error').mockImplementation(() => {})
 })
-afterEach(() => {
+afterEach(async () => {
   vi.restoreAllMocks()
+  await db('rate_limits').del()
 })
 
 describe('POST /api/convert', () => {

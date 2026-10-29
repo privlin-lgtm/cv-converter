@@ -185,6 +185,19 @@ describe('conversion error', () => {
     expect(retry).toBeEnabled()
   })
 
+  it('shows the rate limit message when the server answers 429', async () => {
+    const limited = 'Too many requests: the limit is 10 conversions every 60 minutes. Try again in 12 minutes.'
+    stubFetch((url) => (url === '/api/convert' ? jsonResponse({ error: limited }, 429) : countriesOk(url)))
+    renderConvertPage()
+    await loaded()
+    typeCv()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Convert' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(`Couldn't convert your CV. ${limited}`)
+    expect(screen.getByLabelText('Paste text')).toHaveValue(CV)
+  })
+
   it('says so when the server cannot be reached', async () => {
     stubFetch((url) => {
       if (url !== '/api/convert') return countriesOk(url)
