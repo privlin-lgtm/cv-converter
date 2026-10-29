@@ -1,4 +1,5 @@
 import express, { type ErrorRequestHandler } from 'express'
+import { requireEnv } from './env.js'
 import { convertRouter } from './routes/convert.js'
 import { countriesRouter } from './routes/countries.js'
 import { healthRouter } from './routes/health.js'
@@ -19,6 +20,7 @@ const bodyErrors: ErrorRequestHandler = (err, _req, res, next) => {
 // Tests pass a fake model; the app uses the real one.
 export function createApp(modelOptions: ModelOptions = {}) {
   const app = express()
+  app.set('trust proxy', Number(requireEnv('TRUST_PROXY_HOPS', '0')))
   app.use(express.json({ limit: '100kb' }))
   app.use('/api', healthRouter)
   app.use('/api', countriesRouter)

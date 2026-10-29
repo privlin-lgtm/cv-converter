@@ -2,11 +2,12 @@ import { Router } from 'express'
 import { convertRequestSchema, MAX_CV_CHARS } from '../schemas/request.js'
 import { convertCv } from '../services/convert.js'
 import { ModelError, type ModelOptions } from '../services/model.js'
+import { rateLimit } from './rateLimit.js'
 
 export function convertRouter(modelOptions: ModelOptions = {}) {
   const router = Router()
 
-  router.post('/convert', async (req, res) => {
+  router.post('/convert', rateLimit('convert'), rateLimit('convert_total'), async (req, res) => {
     const parsed = convertRequestSchema.safeParse(req.body)
     if (!parsed.success) {
       const issues = parsed.error.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message }))
