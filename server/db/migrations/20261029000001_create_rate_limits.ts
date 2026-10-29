@@ -2,7 +2,7 @@ import type { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('rate_limits', (t) => {
-    t.text('scope').notNullable().checkIn(['convert', 'ratings'])
+    t.text('scope').notNullable().checkIn(['convert', 'ratings', 'convert_total'])
     t.text('client_hash').notNullable()
     t.timestamp('window_start', { useTz: true }).notNullable()
     t.integer('hits').notNullable()

@@ -94,7 +94,7 @@ The repo deploys as one Vercel project: `vercel.json` builds the server and the 
 
 1. Create a Postgres database (for example Neon from the Vercel Marketplace) and use its pooled connection URL.
 2. Import the repo in Vercel with the repo root as the root directory. Leave the framework preset, build and output settings to `vercel.json`.
-3. Add these environment variables to the project: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `DATABASE_URL`, `RATE_LIMIT_SALT` (a long random string, different from your local one) and `TRUST_PROXY_HOPS=1`, so each visitor's IP address is counted on its own. `RATE_LIMIT_CONVERT`, `RATE_LIMIT_RATINGS` and `RATE_LIMIT_WINDOW_MINUTES` are optional; the defaults are 10 conversions and 30 ratings per IP address every 60 minutes.
+3. Add these environment variables to the project: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `DATABASE_URL`, `RATE_LIMIT_SALT` (a long random string, different from your local one) and `TRUST_PROXY_HOPS=1`, so each visitor's IP address is counted on its own. `RATE_LIMIT_CONVERT`, `RATE_LIMIT_RATINGS`, `RATE_LIMIT_WINDOW_MINUTES` and `RATE_LIMIT_CONVERT_DAILY_TOTAL` are optional; the defaults are 10 conversions and 30 ratings per IP address every 60 minutes, and 200 conversions a day across all visitors.
 4. From your machine, create the tables and load the rules in the production database, with `DATABASE_URL` set to its URL:
    ```
    npm run db:migrate
@@ -102,7 +102,9 @@ The repo deploys as one Vercel project: `vercel.json` builds the server and the 
    ```
 5. Deploy, then open `/api/health` on the new URL; it answers `{"ok":true,"db":true}`.
 
-A client over the limit gets a 429 with a `Retry-After` header, and the Convert page shows the message. The limit is a counter per hashed IP address in the `rate_limits` table, so it holds across serverless instances; it stores no CV text and no plain IP address. Also set a monthly spend limit in the Anthropic Console.
+Testers on one network (an office or classroom wifi) share one IP address, so raise `RATE_LIMIT_CONVERT` for the tester round.
+
+A client over a limit gets a 429 with a `Retry-After` header, and the Convert page shows the message. The limit is a counter per hashed IP address in the `rate_limits` table, so it holds across serverless instances. The daily total, kept in the same table, caps the Anthropic bill however many IP addresses call the API, and resets at midnight UTC. The table stores no CV text and no plain IP address. Also set a monthly spend limit in the Anthropic Console.
 
 ## Limitations
 - English in and out only.

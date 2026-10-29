@@ -7,7 +7,7 @@ import { rateLimit } from './rateLimit.js'
 export function convertRouter(modelOptions: ModelOptions = {}) {
   const router = Router()
 
-  router.post('/convert', rateLimit('convert'), async (req, res) => {
+  router.post('/convert', rateLimit('convert'), rateLimit('convert_total'), async (req, res) => {
     const parsed = convertRequestSchema.safeParse(req.body)
     if (!parsed.success) {
       const issues = parsed.error.issues.map((issue) => ({ path: issue.path.join('.'), message: issue.message }))

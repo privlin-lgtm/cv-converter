@@ -1,7 +1,14 @@
 import type { RequestHandler } from 'express'
 import { recordHit, type RateLimitScope } from '../services/rateLimit.js'
 
-const noun = { convert: 'conversions', ratings: 'ratings' }
+function message(scope: RateLimitScope, limit: number, windowMinutes: number, retryAfterSeconds: number) {
+  if (scope === 'convert_total') {
+    return `The app has reached its daily limit of ${limit} conversions. Try again tomorrow.`
+  }
+  const wait = Math.ceil(retryAfterSeconds / 60)
+  const noun = scope === 'convert' ? 'conversions' : 'ratings'
+  return `Too many requests: the limit is ${limit} ${noun} every ${windowMinutes} minutes. Try again in ${wait} minute${wait === 1 ? '' : 's'}.`
+}
 
 export function rateLimit(scope: RateLimitScope): RequestHandler {
   return async (req, res, next) => {
@@ -10,10 +17,7 @@ export function rateLimit(scope: RateLimitScope): RequestHandler {
       next()
       return
     }
-    const wait = Math.ceil(retryAfterSeconds / 60)
     res.set('Retry-After', String(retryAfterSeconds))
-    res.status(429).json({
-      error: `Too many requests: the limit is ${limit} ${noun[scope]} every ${windowMinutes} minutes. Try again in ${wait} minute${wait === 1 ? '' : 's'}.`,
-    })
+    res.status(429).json({ error: message(scope, limit, windowMinutes, retryAfterSeconds) })
   }
 }

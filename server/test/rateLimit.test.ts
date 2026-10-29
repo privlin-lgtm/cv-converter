@@ -90,12 +90,12 @@ describe('rate limit on POST /api/convert', () => {
     const app = createApp({ send: fakeModel().send, model: 'fake-model' })
     await request(app).post('/api/convert').set('X-Forwarded-For', '203.0.113.9').send(convertBody)
 
-    const rows = await db('rate_limits')
+    const rows = await db('rate_limits').where({ scope: 'convert' })
     expect(rows).toHaveLength(1)
     expect(Object.keys(rows[0]).sort()).toEqual(['client_hash', 'hits', 'scope', 'window_start'])
     expect(rows[0]).toMatchObject({ scope: 'convert', hits: 1 })
     expect(rows[0].client_hash).toMatch(/^[0-9a-f]{64}$/)
-    expect(JSON.stringify(rows)).not.toContain('203.0.113.9')
+    expect(JSON.stringify(await db('rate_limits'))).not.toContain('203.0.113.9')
   })
 })
 
@@ -136,5 +136,36 @@ describe('recordHit', () => {
     vi.stubEnv('RATE_LIMIT_CONVERT', 'ten')
 
     await expect(recordHit('convert', '198.51.100.7')).rejects.toThrow()
+  })
+})
+
+describe('daily cap on all conversions', () => {
+  it('returns 429 across every client once the daily total is spent, until the next UTC day', async () => {
+    vi.stubEnv('TRUST_PROXY_HOPS', '1')
+    vi.stubEnv('RATE_LIMIT_CONVERT_DAILY_TOTAL', '2')
+    const model = fakeModel()
+    const app = createApp({ send: model.send, model: 'fake-model' })
+    const from = (ip: string) => request(app).post('/api/convert').set('X-Forwarded-For', ip).send(convertBody)
+
+    expect((await from('203.0.113.11')).status).toBe(200)
+    expect((await from('203.0.113.12')).status).toBe(200)
+    const res = await from('203.0.113.13')
+
+    expect(res.status).toBe(429)
+    expect(res.body.error).toBe('The app has reached its daily limit of 2 conversions. Try again tomorrow.')
+    expect(Number(res.headers['retry-after'])).toBeLessThanOrEqual(24 * 60 * 60)
+    expect(model.calls()).toBe(2)
+    expect(await db('rate_limits').where({ scope: 'convert_total' })).toMatchObject([{ client_hash: 'all', hits: 3 }])
+  })
+
+  it('resets at midnight UTC and survives the hourly cleanup of per-client rows', async () => {
+    vi.stubEnv('RATE_LIMIT_CONVERT_DAILY_TOTAL', '1')
+    await recordHit('convert_total', '198.51.100.7', new Date('2026-10-29T08:00:00Z'))
+    await recordHit('convert', '198.51.100.7', new Date('2026-10-29T23:30:00Z'))
+    const blocked = await recordHit('convert_total', '198.51.100.7', new Date('2026-10-29T23:59:00Z'))
+    const next = await recordHit('convert_total', '198.51.100.7', new Date('2026-10-30T00:00:00Z'))
+
+    expect(blocked).toEqual({ allowed: false, limit: 1, windowMinutes: 1440, retryAfterSeconds: 60 })
+    expect(next).toMatchObject({ allowed: true, retryAfterSeconds: 86_400 })
   })
 })
