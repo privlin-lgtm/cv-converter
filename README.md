@@ -92,15 +92,19 @@ Paul Rivlin, solo ([GitHub: privlin-lgtm](https://github.com/privlin-lgtm)).
 ## Deploy to Vercel
 The repo deploys as one Vercel project: `vercel.json` builds the server and the client with `npm run build`, serves the client from `client/dist`, and sends every `/api/...` request to the Express app through `api/index.js`. It works the same on the Hobby and the Pro plan. Hobby is for non-commercial use only, so the paid market test needs Pro or another host.
 
-1. Create a Postgres database (for example Neon from the Vercel Marketplace) and use its pooled connection URL.
-2. Import the repo in Vercel with the repo root as the root directory. Leave the framework preset, build and output settings to `vercel.json`.
-3. Add these environment variables to the project: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `DATABASE_URL`, `RATE_LIMIT_SALT` (a long random string, different from your local one) and `TRUST_PROXY_HOPS=1`, so each visitor's IP address is counted on its own. `RATE_LIMIT_CONVERT`, `RATE_LIMIT_RATINGS`, `RATE_LIMIT_WINDOW_MINUTES` and `RATE_LIMIT_CONVERT_DAILY_TOTAL` are optional; the defaults are 10 conversions and 30 ratings per IP address every 60 minutes, and 200 conversions a day across all visitors.
-4. From your machine, create the tables and load the rules in the production database, with `DATABASE_URL` set to its URL:
+1. Import the repo in Vercel with the repo root as the root directory. Leave the framework preset, build and output settings to `vercel.json`. Set the Node.js version to 22.x, the version the tests run on.
+2. Add Neon Postgres to the project from the Vercel Marketplace (Storage tab). The integration adds `DATABASE_URL` (pooled), which the app uses, and `DATABASE_URL_UNPOOLED`, which the migrations use in step 4.
+3. Add these environment variables to the project: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `RATE_LIMIT_SALT` (a long random string, different from your local one) and `TRUST_PROXY_HOPS=1`, so each visitor's IP address is counted on its own. `RATE_LIMIT_CONVERT`, `RATE_LIMIT_RATINGS`, `RATE_LIMIT_WINDOW_MINUTES` and `RATE_LIMIT_CONVERT_DAILY_TOTAL` are optional; the defaults are 10 conversions and 30 ratings per IP address every 60 minutes, and 200 conversions a day across all visitors.
+4. From your machine, create the tables and load the rules in the Neon database. A `DATABASE_URL` set in the shell wins over `server/.env`, so set it to the Neon unpooled URL for these two commands only. In PowerShell:
    ```
+   $env:DATABASE_URL = "<the DATABASE_URL_UNPOOLED value from Vercel>"
    npm run db:migrate
    npm run db:seed
+   Remove-Item Env:DATABASE_URL
    ```
-5. Deploy, then open `/api/health` on the new URL; it answers `{"ok":true,"db":true}`.
+5. Deploy, then open `/api/health` on the production domain (`<project>.vercel.app`); it answers `{"ok":true,"db":true}`.
+
+Share the production domain, not a deployment URL. With Vercel's Standard Protection, deployment URLs and previews ask for a Vercel login; the production domain is public.
 
 Testers on one network (an office or classroom wifi) share one IP address, so raise `RATE_LIMIT_CONVERT` for the tester round.
 
