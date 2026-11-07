@@ -74,6 +74,50 @@ describe('norms seed', () => {
     expect(runCheck('date_format', row.check_def, cvWith(['Mar 2021 – Aug 2024', '2019'])).result).toBe('flagged')
   })
 
+  const personalCv = (lines: string[]): Cv => ({
+    header: { name: 'Dana Example', headline: '', contactLines: ['dana@example.com'] },
+    sections: [{ kind: 'personal_details', heading: 'Personal', text: '', entries: [{ dates: '', title: '', organisation: '', location: '', lines }] }],
+  })
+  const statusRows = [
+    ['US', 'personal_status'],
+    ['GB', 'marital_status_gender'],
+    ['DE', 'marital_status'],
+    ['IL', 'marital_status'],
+  ]
+  const statusLines = [
+    ['Marital status: single', 'flagged'],
+    ['Family status: married', 'flagged'],
+    ['Married, 2 children', 'flagged'],
+    ['Single, no children', 'flagged'],
+    ['Personal: born 1990, married, two children', 'flagged'],
+    ['Divorced', 'flagged'],
+    ['Married with 3 children', 'flagged'],
+    ['Built the scoring step as a single Claude call', 'pass'],
+    ['Wrote a single quiz pack for each course', 'pass'],
+    ['Skills: Single sign-on, React', 'pass'],
+    ['Single-page app with offline sync', 'pass'],
+    ["Led a children's education app to 50k users", 'pass'],
+    ['Taught 30 children in an after-school coding club', 'pass'],
+  ]
+
+  it.each(statusRows.flatMap(([code, key]) => statusLines.map(([line, expected]) => [code, key, line, expected])))(
+    'the %s %s check on "%s" is %s',
+    async (code, key, line, expected) => {
+      const row: { check_def: CheckDef } = await db('norms').where({ country_code: code, key }).first('check_def')
+      expect(runCheck(key, row.check_def, personalCv([line])).result).toBe(expected)
+    },
+  )
+
+  it.each([
+    ['US', 'personal_status'],
+    ['IL', 'marital_status'],
+  ])('the %s %s check also flags children without a marital status', async (code, key) => {
+    const row: { check_def: CheckDef } = await db('norms').where({ country_code: code, key }).first('check_def')
+    for (const line of ['Children: 2', '2 children', 'Father of two', 'Hobbies: hiking; 3 kids']) {
+      expect(runCheck(key, row.check_def, personalCv([line])).result, line).toBe('flagged')
+    }
+  })
+
   it('rejects an unknown check type and an invalid pattern', () => {
     expect(checkDefSchema.safeParse({ type: 'min_words', max: 10 }).success).toBe(false)
     expect(checkDefSchema.safeParse({ type: 'absent', pattern: '(' }).success).toBe(false)
