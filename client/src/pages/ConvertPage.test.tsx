@@ -39,14 +39,14 @@ afterEach(() => {
 })
 
 describe('target select', () => {
-  it('lists the three targets for an Israeli CV and disappears for a CV from abroad', async () => {
+  it('lists the four targets for an Israeli CV and disappears for a CV from abroad', async () => {
     stubFetch(countriesOk)
     renderConvertPage()
     await loaded()
 
     const select = screen.getByLabelText('Target country')
     const options = within(select).getAllByRole('option').map((option) => option.textContent)
-    expect(options).toEqual(['United States', 'United Kingdom', 'Germany'])
+    expect(options).toEqual(['United States', 'United Kingdom', 'Germany', 'EU (Europass-style)'])
 
     fireEvent.click(screen.getByRole('radio', { name: 'My CV from abroad → Israel' }))
     expect(screen.queryByLabelText('Target country')).not.toBeInTheDocument()

@@ -17,6 +17,7 @@ describe('norms seed', () => {
       .orderBy('country_code')
     expect(rows).toEqual([
       { country_code: 'DE', count: '34' },
+      { country_code: 'EU', count: '30' },
       { country_code: 'GB', count: '36' },
       { country_code: 'IL', count: '34' },
       { country_code: 'US', count: '38' },
@@ -27,7 +28,7 @@ describe('norms seed', () => {
     const rows: { country_code: string; key: string; check_def: unknown }[] = await db('norms')
       .whereNotNull('check_def')
       .select('country_code', 'key', 'check_def')
-    expect(rows).toHaveLength(27)
+    expect(rows).toHaveLength(31)
     const failures = rows
       .filter((row) => !checkDefSchema.safeParse(row.check_def).success)
       .map((row) => `${row.country_code}:${row.key}`)
@@ -83,6 +84,7 @@ describe('norms seed', () => {
     ['GB', 'marital_status_gender'],
     ['DE', 'marital_status'],
     ['IL', 'marital_status'],
+    ['EU', 'sensitive_data'],
   ]
   const statusLines = [
     ['Marital status: single', 'flagged'],
@@ -116,6 +118,50 @@ describe('norms seed', () => {
     for (const line of ['Children: 2', '2 children', 'Father of two', 'Hobbies: hiking; 3 kids']) {
       expect(runCheck(key, row.check_def, personalCv([line])).result, line).toBe('flagged')
     }
+  })
+
+  it('seeds the EU checks: 900 words, marital status absent and a CEFR level present', async () => {
+    const rows: { key: string; check_def: CheckDef }[] = await db('norms')
+      .where({ country_code: 'EU' })
+      .whereNotNull('check_def')
+      .select('key', 'check_def')
+      .orderBy('key')
+    expect(rows.map((row) => [row.key, row.check_def.type])).toEqual([
+      ['language_grid', 'present'],
+      ['length_pages', 'max_words'],
+      ['military_jargon', 'absent'],
+      ['sensitive_data', 'absent'],
+    ])
+    expect(rows.find((row) => row.key === 'length_pages')?.check_def).toEqual({ type: 'max_words', max: 900 })
+  })
+
+  it('the EU language check passes a CEFR level and flags a CV without one', async () => {
+    const row: { check_def: CheckDef } = await db('norms')
+      .where({ country_code: 'EU', key: 'language_grid' })
+      .first('check_def')
+    const cvWith = (language: string): Cv => ({
+      header: { name: 'Dana Example', headline: '', contactLines: [] },
+      sections: [{ kind: 'languages', heading: 'Language skills', text: language, entries: [] }],
+    })
+
+    expect(runCheck('language_grid', row.check_def, cvWith('Hebrew – mother tongue; English – C1')).result).toBe('pass')
+    expect(runCheck('language_grid', row.check_def, cvWith('Hebrew – mother tongue; English – fluent')).result).toBe('flagged')
+  })
+
+  it('seeds the EU fit note with its why and sources from the research, and the German army placement', async () => {
+    const rows: { key: string; why: string; sources: string[] }[] = await db('norms')
+      .where({ country_code: 'EU' })
+      .whereIn('key', ['europass_fit', 'military_placement_eu', 'military_placement', 'military_placement_de', 'us_veteran_status'])
+      .select('key', 'why', 'sources')
+    expect(rows.map((row) => row.key).sort()).toEqual(['europass_fit', 'military_placement_eu'])
+    const fit = rows.find((row) => row.key === 'europass_fit')!
+    for (const country of ['Austria', 'Bulgaria', 'Malta', 'Romania', 'Sweden', 'Netherlands', 'German', 'Ukraine']) {
+      expect(fit.why).toContain(country)
+    }
+    expect(fit.sources).toContain(
+      'https://eures.europa.eu/living-and-working/living-and-working-conditions/living-and-working-conditions-netherlands_en',
+    )
+    expect(fit.sources.every((source) => URL.canParse(source))).toBe(true)
   })
 
   it('rejects an unknown check type and an invalid pattern', () => {

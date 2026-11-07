@@ -22,6 +22,7 @@ describe('buildPrompt', () => {
     ['IL', 'US'],
     ['IL', 'GB'],
     ['IL', 'DE'],
+    ['IL', 'EU'],
     ['ABROAD', 'IL'],
   ] as const)('%s → %s lists every target rule as a numbered "key: rule" line', async (from, to) => {
     const { country, norms } = await countryAndNorms(to)
@@ -31,7 +32,7 @@ describe('buildPrompt', () => {
     })
   })
 
-  it.each(['US', 'GB', 'DE'])('adds the three army examples for Israel → %s', async (to) => {
+  it.each(['US', 'GB', 'DE', 'EU'])('adds the three army examples for Israel → %s', async (to) => {
     const { country, norms } = await countryAndNorms(to)
     const { user } = buildPrompt({ from: 'IL', country, norms, text: cvText })
     for (const example of ARMY_EXAMPLES) expect(user).toContain(example)
@@ -63,6 +64,16 @@ describe('buildPrompt', () => {
     const { user } = buildPrompt({ from: 'IL', targetRole: 'Backend developer', country, norms, text: cvText })
     expect(user).toContain('Direction: An Israeli CV, rewritten as a Curriculum Vitae (Lebenslauf) for employers in Germany.')
     expect(user).toContain('Kind of job: Backend developer')
+  })
+
+  it('sends the Europass rules, the fit note and the EU army placement for Israel → EU', async () => {
+    const { country, norms } = await countryAndNorms('EU')
+    const { user } = buildPrompt({ from: 'IL', country, norms, text: cvText })
+    expect(user).toContain('Direction: An Israeli CV, rewritten as a Curriculum Vitae (Europass-style) for employers in EU (Europass-style).')
+    for (const key of ['section_order', 'language_grid', 'europass_fit', 'military_placement_eu', 'military_jargon']) {
+      expect(user).toMatch(new RegExp(`\\n\\d+\\. ${key}: `))
+    }
+    expect(user).not.toMatch(/\d+\. (military_placement|military_placement_de|us_veteran_status): /)
   })
 
   it('asks the model to infer the kind of job when none is given', async () => {

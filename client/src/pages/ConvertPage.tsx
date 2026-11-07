@@ -20,7 +20,7 @@ const DIRECTIONS: { value: Direction; label: string }[] = [
 ]
 
 // The targets for an Israeli CV, in the order the select lists them.
-const TARGET_CODES = ['US', 'GB', 'DE']
+const TARGET_CODES = ['US', 'GB', 'DE', 'EU']
 
 // Word for word from spec.md.
 const PRIVACY_NOTE =

@@ -1,7 +1,7 @@
 import type { Knex } from 'knex'
 import type { CheckDef } from '../../src/schemas/checkDef.js'
 
-type CountryCode = 'US' | 'GB' | 'DE' | 'IL'
+type CountryCode = 'US' | 'GB' | 'DE' | 'IL' | 'EU'
 
 interface NormRow {
   key: string
@@ -10,6 +10,7 @@ interface NormRow {
   sources: string[]
   status: 'confirmed' | 'unverified'
   check?: CheckDef
+  verifiedOn?: string
 }
 
 interface ArmyRow extends NormRow {
@@ -19,6 +20,7 @@ interface ArmyRow extends NormRow {
 // Transcribed from research/cv-norms-2026-10.md, following its seeding notes. Checks are the
 // "Suggested v1 checks" from the same file; every other rule has no check.
 const VERIFIED_ON = '2026-10-10'
+const EU_VERIFIED_ON = '2026-11-07'
 
 const FIELD_START = '(?<=^|[\\n:,;|•·]\\s*)'
 const MARITAL_STATUS = `\\b(?:marital|family|civil)\\s+status\\b|${FIELD_START}(?:married|single|divorced|widowed)(?=\\s*(?:$|[\\n,;|•·.(/])|\\s+(?:with|no)\\s)`
@@ -1169,7 +1171,231 @@ const il: NormRow[] = [
   },
 ]
 
-// Army-service rows: "all" goes to US, GB and DE; "US / UK" to US and GB.
+const EUROPASS_INSTRUCTIONS = 'https://www.eeas.europa.eu/sites/default/files/europass_cv_instructions.pdf'
+const eures = (country: string) =>
+  `https://eures.europa.eu/living-and-working/living-and-working-conditions/living-and-working-conditions-${country}_en`
+
+const eu: NormRow[] = [
+  {
+    key: 'document_name',
+    rule: 'Title the document "Curriculum Vitae" and head it with the person\'s name. Call it a Europass-style CV in notes to the user. Never add the Europass logo or say the CV was made with the official Europass tool.',
+    why: 'Employers recognise the Europass layout, but the app does not produce the official tool\'s output, and the official output carries the Europass logo.',
+    sources: [
+      'https://europass.europa.eu/en/create-europass-cv',
+      'https://www.omnia.fi/en/media/507/download',
+    ],
+    status: 'unverified',
+  },
+  {
+    key: 'section_order',
+    rule: 'Use the Europass section order: Personal information → Job applied for / About me → Work experience → Education and training → Language skills → Digital skills → other skills (communication, organisational, job-related) → Driving licence → Additional information (publications, projects, memberships, volunteering) → Annexes. Delete any section with nothing relevant in it.',
+    why: 'This is the structure European recruiters know from the Europass template, and empty headings waste space.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://www.omnia.fi/en/media/507/download',
+      'https://europass.europa.eu/en/faq?page=2',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'section_order_by_level',
+    rule: 'With little work experience, put Education and training before Work experience.',
+    why: 'Lead with the strongest evidence; the Europass tool lets you reorder the main sections.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.europa.eu/en/faq?page=2',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'length_pages',
+    rule: 'Keep the CV to two pages at most. Use short sentences and only relevant information.',
+    why: 'Europass guidance and EURES both say two pages are enough, and three can read as too long.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://www.ampeu.hr/files/europass-letak_ENG_za-web_2025.pdf',
+      'https://eures.europa.eu/6-steps-starting-professional-career-abroad-part-2-2019-07-12_en',
+    ],
+    status: 'confirmed',
+    check: { type: 'max_words', max: 900 },
+  },
+  {
+    key: 'paper_size',
+    rule: 'Use A4.',
+    why: 'A4 is the paper standard across the EU and EEA, and EURES country guides give CV length in A4 pages.',
+    sources: [eures('netherlands'), eures('denmark'), eures('austria')],
+    status: 'confirmed',
+  },
+  {
+    key: 'chronology',
+    rule: 'List entries newest first in every section.',
+    why: 'Europass and national guidance both put the most recent role first.',
+    sources: [
+      'https://europass.europa.eu/en/create-europass-cv',
+      EUROPASS_INSTRUCTIONS,
+      'https://www.ampeu.hr/files/europass-letak_ENG_za-web_2025.pdf',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'personal_information',
+    rule: 'Open with Personal information: name, a contactable address including the country (city and country is enough), phone in international format with a "+" and country code (e.g. +972 50 123 4567), and email. Only name and surname are required by the tool.',
+    why: 'Recruiters abroad need to reach you, and the international format works from any country.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.europa.eu/en/do-i-need-complete-all-sections-europass-profile',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'optional_personal_data',
+    rule: 'Treat date of birth, nationality and gender as optional fields. Keep them only if the user supplied them, and never invent or ask for them. If nationality is kept, add a work-authorisation line only from what the user states (e.g. "EU citizen" or "Requires a work permit").',
+    why: 'The Europass template has these fields but marks them optional, and only name and surname are mandatory.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.europa.eu/en/do-i-need-complete-all-sections-europass-profile',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'sensitive_data',
+    rule: 'Remove health, disability, religion or beliefs, and marital status or children. Don\'t add anything that is not relevant to the job.',
+    why: 'The Europass portal tells users never to include sensitive personal information such as health or beliefs, or information not relevant to their career.',
+    sources: [
+      'https://europass.europa.eu/en/what-type-information-should-i-include-my-europass-profile',
+      EUROPASS_INSTRUCTIONS,
+    ],
+    status: 'confirmed',
+    check: { type: 'absent', pattern: MARITAL_STATUS, flags: 'i' },
+  },
+  {
+    key: 'photo',
+    rule: 'Never insert, require or generate a photo. Add a note that the Europass template has an optional photo field, and that a photo is only worth adding when the employer asks for one or the target country expects it.',
+    why: 'Europass guidance says a photo is not essential unless the employer asks.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.nqa.gov.ua/en/?p=442',
+      'https://europass.europa.eu/en/faq?page=1',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'headline_about_me',
+    rule: 'Under Personal information, add "Job applied for" (the target role) and a short "About me" of 2–4 sentences with no "I" or "my", tailored to the role.',
+    why: 'HR staff surveyed by the Hungarian Europass centre found the "job applied for" line the most useful section, and Europass guidance says to tailor each CV.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://tka.hu/new/5274/europass-documents-through-the-eyes-of-hr-professionals',
+      'https://europass.nqa.gov.ua/en/?p=442',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'work_experience',
+    rule: 'Make one entry per relevant job: dates, job title, employer, city and country, then the main activities as bullets, with numbers where they help. Explain any gap in the career with a dated one-line entry giving the user\'s real reason; never invent one.',
+    why: 'Europass entries are compared side by side, and unexplained gaps raise questions.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.nqa.gov.ua/en/?p=442',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'education',
+    rule: 'Make one entry per qualification: dates, the exact qualification title in English (no abbreviation on its own), institution, city and country. Add the EQF level only if the user knows it. Drop schooling below the highest relevant level (e.g. high school when there is a degree).',
+    why: 'The full title and level let recruiters in other countries compare foreign qualifications.',
+    sources: [EUROPASS_INSTRUCTIONS],
+    status: 'confirmed',
+  },
+  {
+    key: 'date_format',
+    rule: 'Write every period as MM/YYYY – MM/YYYY, with "Current" for an ongoing role.',
+    why: 'Month and year are the norm in continental European CVs, and day-first or month-name formats are read differently across countries.',
+    sources: [EUROPASS_INSTRUCTIONS],
+    status: 'unverified',
+  },
+  {
+    key: 'language_grid',
+    rule: 'List mother tongue(s) first. For every other language, give one CEFR level (A1–C2), e.g. "English – C1". Give a level for each of Listening, Reading, Spoken production, Spoken interaction and Writing only when the CV already gives all five. Add any certificate with its level and date. Never overstate a level, and never use stars, bars or percentages.',
+    why: 'The language grid is the Europass section HR staff rate most highly, and the six CEFR levels are comparable across Europe.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.europa.eu/system/files/2020-05/CEFR%20self-assessment%20grid%20EN.pdf',
+      'https://www.omnia.fi/en/media/507/download',
+      'https://tka.hu/new/5274/europass-documents-through-the-eyes-of-hr-professionals',
+    ],
+    status: 'confirmed',
+    check: { type: 'present', pattern: '\\b[ABC][12]\\b' },
+  },
+  {
+    key: 'digital_skills',
+    rule: 'Group digital skills by theme (e.g. "Programming: Python, TypeScript"), using the tool names from the job ad. Add a Europass digital skills test result only if the user supplied one.',
+    why: 'The Europass tool groups digital skills under user-named headings and can attach the digital skills test result.',
+    sources: [
+      'https://www.omnia.fi/en/media/507/download',
+      'https://europass.europa.eu/en/news/new-improvements-europass-tools',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'references',
+    rule: 'Remove referee names and contact details unless the user says the referees agreed to be listed. "References available on request" is optional.',
+    why: 'Europass guidance says never to give a referee\'s details without their agreement.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://eures.europa.eu/6-steps-starting-professional-career-abroad-part-2-2019-07-12_en',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'signature',
+    rule: 'Add no place, date or signature block. Note to the user that some countries (e.g. Germany) still expect one.',
+    why: 'Neither the Europass guidance nor the tool\'s documentation mentions a signature.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://europass.europa.eu/en/faq?page=1',
+      'https://europass.europa.eu/en/faq?page=2',
+    ],
+    status: 'unverified',
+  },
+  {
+    key: 'application_language',
+    rule: 'Write the CV in English. Add a note that many employers expect the local language unless the ad is in English, and that the Europass tool can produce the same CV in 31 languages.',
+    why: 'EURES country guides often ask for a CV in the local language, and the Europass tool supports 31 languages.',
+    sources: [
+      eures('croatia'),
+      eures('netherlands'),
+      'https://europass.europa.eu/en/faq?page=1',
+    ],
+    status: 'confirmed',
+  },
+  {
+    key: 'europass_fit',
+    rule: 'Always list one change of kind "flagged" that cites this key, with "what" set to "Where a Europass-style CV fits". If the CV or the kind of job points to a job in Germany, add a note that the Germany target fits German private employers better. If it points to the Netherlands, add a note that Dutch employers usually prefer a standard Dutch CV.',
+    why: 'National or EU employment services recommend a Europass CV in Austria, Bulgaria, Malta, Romania and Sweden. Sources say it is accepted or common in Cyprus, Finland, Greece, Hungary, Italy and Lithuania, and outside the EU in Ukraine. It is a poor fit in the Netherlands, where employers don\'t know it well, and with German private employers, who prefer a personalised CV; for Germany, the Germany target fits better.',
+    sources: [
+      eures('austria'),
+      eures('bulgaria'),
+      eures('malta'),
+      eures('romania'),
+      eures('sweden'),
+      'https://arbetsformedlingen.se/other-languages/english-engelska/find-your-new-job/find-a-job-abroad',
+      eures('cyprus'),
+      eures('finland'),
+      eures('greece'),
+      'https://tka.hu/new/5274/europass-documents-through-the-eyes-of-hr-professionals',
+      eures('italy'),
+      eures('lithuania'),
+      'https://europass.nqa.gov.ua/en/?p=442',
+      eures('netherlands'),
+      eures('germany'),
+      'https://info.lse.ac.uk/current-students/careers/information-and-resources/country-profiles/germany',
+    ],
+    status: 'confirmed',
+  },
+]
+
+// Army-service rows: "all" goes to US, GB, DE and EU; "US / UK" to US and GB.
 const army: ArmyRow[] = [
   {
     key: 'military_placement',
@@ -1193,8 +1419,20 @@ const army: ArmyRow[] = [
     status: 'confirmed',
   },
   {
+    key: 'military_placement_eu',
+    targets: ['EU'],
+    rule: 'Always keep service as a dated entry in reverse-chronological order, and never drop it, because that leaves a gap. Put service that is relevant to the target job under Work experience as a job; give other service one dated line.',
+    why: 'Europass guidance asks you to explain career gaps, and the strictest EU market, Germany, expects a CV with no gaps.',
+    sources: [
+      EUROPASS_INSTRUCTIONS,
+      'https://www.ga.ovgu.de/grs_media/Dokumente/Postdocs/DE_Lebenslauf.pdf',
+    ],
+    status: 'unverified',
+    verifiedOn: EU_VERIFIED_ON,
+  },
+  {
     key: 'military_context_line',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Add once, in the entry\'s organisation: "Israel Defense Forces (IDF)" and "mandatory military service". For officers or long-service personnel, add "extended service as officer".',
     why: "Foreign readers don't know Israeli service is compulsory, so without this it can look like a career choice.",
     sources: [
@@ -1204,7 +1442,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'military_ranks',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Give the rank only in English. Lead with the function title (e.g. "Squad Leader", "Software Developer"). Put the rank in parentheses only for officers (Lieutenant and above) or when it signals command. Leave out enlisted ranks for conscripts when the role says more.',
     why: 'Untranslated Hebrew ranks mean nothing abroad, and civilian readers care more about function than rank.',
     sources: [
@@ -1216,7 +1454,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'military_jargon',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Remove Hebrew acronyms, slang and unit numbers. Replace each with a plain-English description of the function (e.g. "IDF computing and IT unit", "armoured corps", "basic-training instructor"). Never write Tzahal; write "Israel Defense Forces (IDF)" the first time it appears.',
     why: "Recruiters abroad can't decode Israeli military jargon, and both Israeli and US career guides say to write in civilian terms.",
     sources: [
@@ -1228,7 +1466,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'military_unit_names',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Name a unit only if it is publicly acknowledged and widely recognised abroad (e.g. "Unit 8200, IDF Intelligence Corps"), and always add a function line after it. For any other unit, describe the type and function only ("signals-intelligence unit", "technology unit").',
     why: 'A recognised name helps tech recruiters, but an unknown number or codename tells them nothing and may be sensitive.',
     sources: [
@@ -1238,7 +1476,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'military_classified',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Never output operation names, codenames, named systems or tools built in service, targets, base locations, clearance-level details or intelligence methods. Describe sensitive work generically: technology stack, team size, project type. If the source CV seems to contain such details, delete them and warn the user rather than rewording them.',
     why: 'Israeli guidance limits disclosure to "what is permitted for publication", and defence-establishment rules ban posting even non-classified details.',
     sources: [
@@ -1249,7 +1487,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'military_skills',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Rewrite each military duty as a civilian equivalent with numbers: people managed, trainees, budget or equipment value, systems and technologies, results. Use civilian job titles (commander → team leader/supervisor; office role → administration).',
     why: 'Employers hire for transferable skills, and figures make leadership claims believable.',
     sources: [
@@ -1261,7 +1499,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'security_clearance',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Remove Israeli clearance levels from the CV. If the user insists, write "Held Israeli security clearance (not transferable)" and never present it as a US, UK or German clearance.',
     why: 'An Israeli clearance has no standing with foreign governments and can confuse defence-sector screening.',
     sources: [],
@@ -1269,7 +1507,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'national_service',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Translate Sherut Leumi / Sherut Ezrachi as "National Service (civilian alternative to military service, Israel)", then give the placement organisation, sector, dates and hours. Put it under Work Experience if relevant, otherwise Volunteer Experience. In DE, keep it dated, the same as military service.',
     why: 'It is a recognised 1–2-year service in schools, hospitals and similar settings, so it should get the same weight as a job, not look like a gap.',
     sources: [
@@ -1279,7 +1517,7 @@ const army: ArmyRow[] = [
   },
   {
     key: 'reserve_duty',
-    targets: ['US', 'GB', 'DE'],
+    targets: ['US', 'GB', 'DE', 'EU'],
     rule: 'Don\'t list routine reserve duty. If reserve call-ups explain a gap, overlap or a pause in a job (common since Oct 2023), add one line: "Reserve military service, Israel Defense Forces — [dates / approx. days]". Give no operational detail. In DE, always date it.',
     why: 'Long call-ups since 2023 can look like unexplained gaps or short job stints, and one factual line answers the question.',
     sources: [
@@ -1301,14 +1539,18 @@ const army: ArmyRow[] = [
 ]
 
 export async function seed(knex: Knex): Promise<void> {
-  const byCountry: [CountryCode, NormRow[]][] = [
-    ['US', us],
-    ['GB', gb],
-    ['DE', de],
-    ['IL', il],
+  const byCountry: [CountryCode, NormRow[], string][] = [
+    ['US', us, VERIFIED_ON],
+    ['GB', gb, VERIFIED_ON],
+    ['DE', de, VERIFIED_ON],
+    ['IL', il, VERIFIED_ON],
+    ['EU', eu, EU_VERIFIED_ON],
   ]
-  const rows = byCountry.flatMap(([code, norms]) =>
-    [...norms, ...army.filter((norm) => norm.targets.includes(code))].map((norm) => ({
+  const rows = byCountry.flatMap(([code, norms, verifiedOn]) =>
+    [
+      ...norms.map((norm) => ({ ...norm, verifiedOn })),
+      ...army.filter((norm) => norm.targets.includes(code)),
+    ].map((norm) => ({
       country_code: code,
       key: norm.key,
       rule: norm.rule,
@@ -1316,7 +1558,7 @@ export async function seed(knex: Knex): Promise<void> {
       sources: norm.sources,
       status: norm.status,
       check_def: norm.check ?? null,
-      verified_on: VERIFIED_ON,
+      verified_on: norm.verifiedOn ?? VERIFIED_ON,
     })),
   )
   await knex('norms').del()
