@@ -61,4 +61,5 @@ export interface ConversionResult {
   notes: KeyedText[]
   checks: CheckResult[]
   meta: { model: string; country: string; paperSize: 'A4' | 'Letter'; documentName: string }
+  directionMismatch: { detected: Direction; signals: string[] } | null
 }

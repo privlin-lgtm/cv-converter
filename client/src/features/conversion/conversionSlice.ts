@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { detectOrigin } from '../../../../server/src/shared/origin.ts'
 import { apiRequest } from '../../api.ts'
 import type { ConversionResult, Direction } from './types.ts'
 
@@ -8,6 +9,7 @@ export const MAX_TARGET_ROLE_CHARS = 100
 
 interface ConversionState {
   from: Direction
+  directionChosen: boolean
   to: string
   text: string
   targetRole: string
@@ -20,6 +22,7 @@ const DEFAULT_TARGET = 'US'
 
 const initialState: ConversionState = {
   from: 'IL',
+  directionChosen: false,
   to: DEFAULT_TARGET,
   text: '',
   targetRole: '',
@@ -47,15 +50,21 @@ const conversionSlice = createSlice({
   reducers: {
     // A CV from abroad can only go to Israel, so the target follows the direction.
     setFrom(state, action: PayloadAction<Direction>) {
+      state.directionChosen = true
       if (action.payload === state.from) return
       state.from = action.payload
       state.to = action.payload === 'ABROAD' ? 'IL' : DEFAULT_TARGET
     },
     setTo(state, action: PayloadAction<string>) {
+      state.directionChosen = true
       state.to = action.payload
     },
     setText(state, action: PayloadAction<string>) {
       state.text = action.payload
+      const { origin } = detectOrigin(action.payload)
+      if (state.directionChosen || origin === 'unsure' || origin === state.from) return
+      state.from = origin
+      state.to = origin === 'ABROAD' ? 'IL' : DEFAULT_TARGET
     },
     setTargetRole(state, action: PayloadAction<string>) {
       state.targetRole = action.payload

@@ -42,7 +42,7 @@ const output: ModelOutput = {
 }
 
 describe('buildResult', () => {
-  const result = buildResult(output, norms, country, 'fake-model')
+  const result = buildResult(output, norms, country, 'fake-model', null)
 
   it('joins why, sources and status from the rules by ruleKey', () => {
     expect(result.changes[0]).toEqual({
@@ -74,5 +74,11 @@ describe('buildResult', () => {
       { ruleKey: 'date_of_birth', rule: 'Remove the date of birth.', result: 'pass', detail: 'Not found' },
     ])
     expect(result.meta).toEqual({ model: 'fake-model', country: 'US', paperSize: 'Letter', documentName: 'Résumé' })
+  })
+
+  it('passes the direction mismatch through', () => {
+    const mismatch = { detected: 'IL' as const, signals: ['Hebrew text'] }
+    expect(buildResult(output, norms, country, 'fake-model', mismatch).directionMismatch).toEqual(mismatch)
+    expect(result.directionMismatch).toBeNull()
   })
 })

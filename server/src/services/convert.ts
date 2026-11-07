@@ -3,6 +3,7 @@ import type { ConvertRequest } from '../schemas/request.js'
 import { convertWithModel, ModelError, type ModelOptions, type ModelUsage } from './model.js'
 import { getCountries, getNorms } from './norms.js'
 import { buildPrompt } from './prompt.js'
+import { findDirectionMismatch } from '../shared/origin.js'
 import { buildResult, type ConversionResult } from './result.js'
 
 // Logs metadata only: never the CV, the prompt or the result.
@@ -23,7 +24,7 @@ export async function convertCv(request: ConvertRequest, options: ModelOptions =
   try {
     const { output, usage } = await convertWithModel(prompt, { ...options, model })
     logConversion({ model, from: request.from, to: request.to, status: 200, usage, startedAt })
-    return buildResult(output, norms, country, model)
+    return buildResult(output, norms, country, model, findDirectionMismatch(request.from, request.text))
   } catch (err) {
     if (err instanceof ModelError) {
       logConversion({ model, from: request.from, to: request.to, status: err.status, usage: err.usage, startedAt })
