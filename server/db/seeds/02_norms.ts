@@ -20,6 +20,10 @@ interface ArmyRow extends NormRow {
 // "Suggested v1 checks" from the same file; every other rule has no check.
 const VERIFIED_ON = '2026-10-10'
 
+const FIELD_START = '(?<=^|[\\n:,;|•·]\\s*)'
+const MARITAL_STATUS = `\\b(?:marital|family|civil)\\s+status\\b|${FIELD_START}(?:married|single|divorced|widowed)(?=\\s*(?:$|[\\n,;|•·.(/])|\\s+(?:with|no)\\s)`
+const CHILDREN = `${FIELD_START}(?:\\d|one|two|three|four|five|six|no)\\s+(?:children|kids)(?=\\s*(?:$|[\\n,;|•·.)]))|${FIELD_START}(?:children|kids)\\s*:|\\b(?:father|mother)\\s+of\\s+(?:\\d|one|two|three|four|five|six)\\b`
+
 const us: NormRow[] = [
   {
     key: 'document_name',
@@ -96,7 +100,7 @@ const us: NormRow[] = [
       'https://www.eeoc.gov/prohibited-employment-policiespractices',
     ],
     status: 'confirmed',
-    check: { type: 'absent', pattern: '\\b(married|single|divorced|children)\\b', flags: 'i' },
+    check: { type: 'absent', pattern: `${MARITAL_STATUS}|${CHILDREN}`, flags: 'i' },
   },
   {
     key: 'national_id',
@@ -348,7 +352,7 @@ const gb: NormRow[] = [
       'https://studentservices.on.worc.ac.uk/wp-content/uploads/CV-and-Covering-Letters-Int-students-DR-020626.pdf',
     ],
     status: 'confirmed',
-    check: { type: 'absent', pattern: '\\b(married|single|divorced)\\b', flags: 'i' },
+    check: { type: 'absent', pattern: MARITAL_STATUS, flags: 'i' },
   },
   {
     key: 'personal_other',
@@ -637,7 +641,7 @@ const de: NormRow[] = [
       'https://bzkj.de/resource/blob/239448/267006a6e2cbea8717cdbbaf141e2e6f/leitfaden-fuer-diskriminierungsfreie-einstellungsverfahren-data.pdf',
     ],
     status: 'confirmed',
-    check: { type: 'absent', pattern: '\\b(married|single|divorced)\\b', flags: 'i' },
+    check: { type: 'absent', pattern: MARITAL_STATUS, flags: 'i' },
   },
   {
     key: 'work_authorization',
@@ -907,7 +911,7 @@ const il: NormRow[] = [
       'https://www.kolzchut.org.il/he/איסור_אפליית_עובד_בשל_מעמדו_האישי',
     ],
     status: 'confirmed',
-    check: { type: 'absent', pattern: '\\b(married|single|divorced|children)\\b', flags: 'i' },
+    check: { type: 'absent', pattern: `${MARITAL_STATUS}|${CHILDREN}`, flags: 'i' },
   },
   {
     key: 'address',
