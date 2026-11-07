@@ -22,6 +22,7 @@ export const RESULT: ConversionResult = {
   notes: [],
   checks: [],
   meta: { model: 'fake-model', country: 'US', paperSize: 'Letter', documentName: 'Résumé' },
+  directionMismatch: null,
 }
 
 export function jsonResponse(body: unknown, status = 200) {

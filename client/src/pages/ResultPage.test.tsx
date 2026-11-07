@@ -330,6 +330,35 @@ describe('placeholder notice', () => {
   })
 })
 
+describe('direction mismatch notice', () => {
+  it('names the signals and the direction it was converted as, and links back to the Convert page', async () => {
+    stubFetch(countriesOk)
+    renderResult({ ...US_RESULT, directionMismatch: { detected: 'ABROAD', signals: ['US address or GPA'] } })
+
+    const notice = screen.getByText(/This looked like/)
+    expect(notice).toHaveTextContent(
+      'This looked like a CV from abroad (US address or GPA), but it was converted as an Israeli CV. Edit and convert again?',
+    )
+    expect(notice).toHaveClass('direction-mismatch')
+
+    fireEvent.click(within(notice).getByRole('link', { name: 'Edit and convert again?' }))
+    expect(await screen.findByLabelText('Paste text')).toBeInTheDocument()
+  })
+
+  it('says it the other way round for an Israeli CV sent as a CV from abroad', () => {
+    renderResult({ ...US_RESULT, directionMismatch: { detected: 'IL', signals: ['Hebrew text', 'IDF service'] } })
+
+    expect(screen.getByText(/This looked like/)).toHaveTextContent(
+      'This looked like an Israeli CV (Hebrew text, IDF service), but it was converted as a CV from abroad.',
+    )
+  })
+
+  it('is absent when the direction matched', () => {
+    renderResult(US_RESULT)
+    expect(screen.queryByText(/This looked like/)).not.toBeInTheDocument()
+  })
+})
+
 describe('leaving the page', () => {
   it('redirects a reload with no result to / and says why', async () => {
     stubFetch(countriesOk)

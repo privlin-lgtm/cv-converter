@@ -1,5 +1,6 @@
 import { useEffect, useState, type SyntheticEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { detectOrigin } from '../../../server/src/shared/origin.ts'
 import {
   convertCv,
   MAX_TARGET_ROLE_CHARS,
@@ -33,7 +34,7 @@ function ConvertPage() {
   const { state } = useLocation()
   const [notice] = useState(() => (state as { notice?: string } | null)?.notice)
   const countries = useAppSelector((state) => state.countries)
-  const { from, to, text, targetRole, status, error } = useAppSelector((state) => state.conversion)
+  const { from, directionChosen, to, text, targetRole, status, error } = useAppSelector((state) => state.conversion)
 
   useEffect(() => {
     void dispatch(loadCountries())
@@ -49,6 +50,7 @@ function ConvertPage() {
   const converting = status === 'converting'
   const overLimit = text.length > MAX_TEXT_CHARS
   const canConvert = countriesReady && !converting && text.trim() !== '' && !overLimit
+  const { origin: detected, signals } = detectOrigin(text)
 
   async function convert() {
     const action = await dispatch(convertCv())
@@ -86,6 +88,20 @@ function ConvertPage() {
                 </label>
               ))}
             </div>
+            {detected !== 'unsure' && detected !== from && (
+              <div className="notice direction-notice" role="status">
+                <p>
+                  This looks like {detected === 'IL' ? 'an Israeli CV' : 'a CV from abroad'} ({signals.join(', ')}).
+                  Switch direction?
+                </p>
+                <button type="button" className="secondary" onClick={() => dispatch(setFrom(detected))}>
+                  Switch to “{DIRECTIONS.find((direction) => direction.value === detected)?.label}”
+                </button>
+              </div>
+            )}
+            {detected === from && !directionChosen && (
+              <p className="hint">Picked from your CV ({signals.join(', ')}). Change it if that's wrong.</p>
+            )}
           </fieldset>
 
           {from === 'IL' && (

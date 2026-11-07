@@ -2,6 +2,8 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import spec from '../../../intent/2026-10-10-mvp/spec.md?raw'
+import ilCv from '../../../server/test/fixtures/il-ops-combat-reserves.txt?raw'
+import usResume from '../../../server/test/fixtures/us-resume.txt?raw'
 import { COUNTRIES, countriesOk, jsonResponse, RESULT, renderWithProviders, stubFetch } from '../test/helpers.tsx'
 import ConvertPage from './ConvertPage.tsx'
 
@@ -51,6 +53,77 @@ describe('target select', () => {
 
     fireEvent.click(screen.getByRole('radio', { name: 'My Israeli CV → abroad' }))
     expect(screen.getByLabelText('Target country')).toBeInTheDocument()
+  })
+})
+
+describe('direction detection', () => {
+  const direction = (name: string) => screen.getByRole('radio', { name })
+  const ISRAELI = 'My Israeli CV → abroad'
+  const FROM_ABROAD = 'My CV from abroad → Israel'
+
+  it('pre-selects the direction from the pasted CV until the user picks one', async () => {
+    const fetchMock = stubFetch((url) => (url === '/api/convert' ? jsonResponse(RESULT) : countriesOk(url)))
+    renderConvertPage()
+    await loaded()
+
+    typeCv(usResume)
+    expect(direction(FROM_ABROAD)).toBeChecked()
+    expect(screen.queryByLabelText('Target country')).not.toBeInTheDocument()
+    expect(screen.getByText(/Picked from your CV \(US address or GPA, phone number from abroad\)/)).toBeVisible()
+
+    typeCv(ilCv)
+    expect(direction(ISRAELI)).toBeChecked()
+    expect(screen.getByText(/Picked from your CV \(Hebrew text, IDF service/)).toBeVisible()
+
+    typeCv(usResume)
+    fireEvent.click(screen.getByRole('button', { name: 'Convert' }))
+    await screen.findByText('Result route')
+    const [[, init]] = callsTo(fetchMock, '/api/convert')
+    expect(JSON.parse(String(init?.body))).toMatchObject({ from: 'ABROAD', to: 'IL' })
+  })
+
+  it('leaves the direction alone when the CV gives no clear signal', async () => {
+    stubFetch(countriesOk)
+    renderConvertPage()
+    await loaded()
+
+    typeCv()
+    expect(direction(ISRAELI)).toBeChecked()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Picked from your CV/)).not.toBeInTheDocument()
+  })
+
+  it('warns when a chosen direction contradicts the CV, without blocking Convert, and switches in one click', async () => {
+    stubFetch(countriesOk)
+    renderConvertPage()
+    await loaded()
+
+    fireEvent.click(direction(FROM_ABROAD))
+    typeCv(ilCv)
+    expect(direction(FROM_ABROAD)).toBeChecked()
+    const notice = screen.getByRole('status')
+    expect(notice).toHaveTextContent(
+      'This looks like an Israeli CV (Hebrew text, IDF service, Israeli university, +972 or 05x phone number, Israeli city). Switch direction?',
+    )
+    expect(screen.getByRole('button', { name: 'Convert' })).toBeEnabled()
+
+    fireEvent.click(within(notice).getByRole('button', { name: `Switch to “${ISRAELI}”` }))
+    expect(direction(ISRAELI)).toBeChecked()
+    expect(screen.getByLabelText('Target country')).toHaveValue('US')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Picked from your CV/)).not.toBeInTheDocument()
+  })
+
+  it('treats picking a target as choosing the Israeli direction', async () => {
+    stubFetch(countriesOk)
+    renderConvertPage()
+    await loaded()
+
+    fireEvent.change(screen.getByLabelText('Target country'), { target: { value: 'DE' } })
+    typeCv(usResume)
+    expect(direction(ISRAELI)).toBeChecked()
+    expect(screen.getByLabelText('Target country')).toHaveValue('DE')
+    expect(screen.getByRole('status')).toHaveTextContent('This looks like a CV from abroad (US address or GPA, phone number from abroad).')
   })
 })
 

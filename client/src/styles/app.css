@@ -582,3 +582,20 @@ button:disabled {
   font-size: 0.875rem;
   color: var(--muted);
 }
+
+.direction-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+}
+
+.direction-notice p {
+  margin: 0;
+}
+
+.direction .hint {
+  margin: 0.75rem 0 0;
+}

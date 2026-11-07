@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import CvSheet from '../components/CvSheet.tsx'
 import RatingForm from '../components/RatingForm.tsx'
 import type { ResultChange } from '../features/conversion/types.ts'
@@ -17,7 +17,7 @@ function ResultPage() {
   const result = useAppSelector((state) => state.conversion.result)
   if (!result) return <Navigate to="/" replace state={{ notice: NOT_SAVED_NOTICE }} />
 
-  const { cv, checks, questions, changes, notes, meta } = result
+  const { cv, checks, questions, changes, notes, meta, directionMismatch } = result
   const { name, headline, contactLines } = cv.header
   const cvText = [
     name,
@@ -46,6 +46,13 @@ function ResultPage() {
       <style>{`@page { size: ${meta.paperSize}; margin: 0 }`}</style>
       <h1>Your result</h1>
       <p className="subtitle">Rewritten as a {meta.documentName}.</p>
+      {directionMismatch && (
+        <p className="notice direction-mismatch" role="status">
+          This looked like {directionMismatch.detected === 'IL' ? 'an Israeli CV' : 'a CV from abroad'} (
+          {directionMismatch.signals.join(', ')}), but it was converted as{' '}
+          {directionMismatch.detected === 'IL' ? 'a CV from abroad' : 'an Israeli CV'}. <Link to="/">Edit and convert again?</Link>
+        </p>
+      )}
       <div className="result-grid">
         <CvSheet cv={cv} layout={meta.country === 'DE' ? 'tabular' : 'single'} />
         <aside className="panel">

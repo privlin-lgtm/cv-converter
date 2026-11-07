@@ -1,4 +1,5 @@
 import type { ModelOutput } from '../schemas/modelOutput.js'
+import type { DirectionMismatch } from '../shared/origin.js'
 import { runChecks, type CheckResult } from './checks.js'
 import type { Country, Norm } from './norms.js'
 
@@ -24,9 +25,16 @@ export interface ConversionResult {
   notes: ModelOutput['notes']
   checks: ResultCheck[]
   meta: { model: string; country: string; paperSize: Country['paperSize']; documentName: string }
+  directionMismatch: DirectionMismatch | null
 }
 
-export function buildResult(output: ModelOutput, norms: Norm[], country: Country, model: string): ConversionResult {
+export function buildResult(
+  output: ModelOutput,
+  norms: Norm[],
+  country: Country,
+  model: string,
+  directionMismatch: DirectionMismatch | null,
+): ConversionResult {
   const byKey = new Map(norms.map((norm) => [norm.key, norm]))
   return {
     cv: output.cv,
@@ -43,5 +51,6 @@ export function buildResult(output: ModelOutput, norms: Norm[], country: Country
     notes: output.notes,
     checks: runChecks(norms, output.cv).map((check) => ({ ...check, rule: byKey.get(check.ruleKey)!.rule })),
     meta: { model, country: country.code, paperSize: country.paperSize, documentName: country.documentName },
+    directionMismatch,
   }
 }

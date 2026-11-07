@@ -13,6 +13,10 @@
     background: #fff;
   }
 
+  .direction-mismatch {
+    display: none;
+  }
+
   .cv-sheet {
     width: auto;
     max-width: none;

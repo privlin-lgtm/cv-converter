@@ -118,6 +118,33 @@ describe('POST /api/convert', () => {
     expect(user).toContain(`${CV_START}\n${cvText.trim()}\n${CV_END}`)
   })
 
+  it('leaves directionMismatch null when the direction matches the CV', async () => {
+    const res = await post(fakeModel(message(JSON.stringify(validOutput))).send, ilToUs)
+    expect(res.status).toBe(200)
+    expect(res.body.directionMismatch).toBeNull()
+  })
+
+  it('flags an Israeli CV sent as a CV from abroad, and still converts it', async () => {
+    const model = fakeModel(message(JSON.stringify(validOutput)))
+    const res = await post(model.send, { from: 'ABROAD', to: 'IL', text: cvText })
+    expect(res.status).toBe(200)
+    expect(res.body.directionMismatch).toEqual({
+      detected: 'IL',
+      signals: ['Hebrew text', 'IDF service', 'Israeli ID number', 'Israeli university', '+972 or 05x phone number', 'Israeli city'],
+    })
+    expect(model.calls).toHaveLength(1)
+  })
+
+  it('flags a CV from abroad sent as an Israeli CV', async () => {
+    const usText = readFileSync(new URL('./fixtures/us-resume.txt', import.meta.url), 'utf8')
+    const res = await post(fakeModel(message(JSON.stringify(validOutput))).send, { from: 'IL', to: 'GB', text: usText })
+    expect(res.status).toBe(200)
+    expect(res.body.directionMismatch).toEqual({
+      detected: 'ABROAD',
+      signals: ['US address or GPA', 'phone number from abroad'],
+    })
+  })
+
   it('logs metadata only, never the CV or the result', async () => {
     const model = fakeModel(message(JSON.stringify(validOutput)))
     await post(model.send, ilToUs)
