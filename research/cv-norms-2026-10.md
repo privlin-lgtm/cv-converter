@@ -13,6 +13,8 @@ Researched 10 Oct 2026, ahead of the Developers Institute hackathon (15–20 Oct
 | status | `status` | `confirmed` or `unverified`, from the first word of the research status (so "CONFIRMED (+972 format UNVERIFIED)" seeds as `confirmed`; the bracketed note stays here). Unverified rules are still used, but the UI labels them "common practice". |
 | check | `check_def` (jsonb) | Only for the rules listed under "Suggested v1 checks" at the end; `null` for the rest. |
 
+**Regional format.** Research for an EU (Europass) target, added 7 Nov 2026 alongside Germany, is in [europass-2026-11.md](europass-2026-11.md). It uses the same format and is not seeded yet.
+
 **Status legend.** CONFIRMED means an authoritative source states it, or two independent sources agree. UNVERIFIED means one weak source, or the researcher's inference.
 
 **Wording rule for every country.** The legal rows (`legal_basis`, `legal_background`, `agg_sensitive_data`) are not rules for the CV. They tell the model how to phrase its explanations: removing age, marital status and so on is the *country's convention*, linked to the *employer's* anti-discrimination duties. It is never "illegal for you to include".
