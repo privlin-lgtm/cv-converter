@@ -200,6 +200,19 @@ describe('POST /api/convert', () => {
     expect(model.calls).toHaveLength(2)
   })
 
+  it('accepts Israel → EU and sends the Europass rules', async () => {
+    const model = fakeModel(message(JSON.stringify({ ...validOutput, changes: [{ kind: 'flagged', what: 'Where a Europass-style CV fits', ruleKey: 'europass_fit' }] })))
+    const res = await post(model.send, { ...ilToUs, to: 'EU' })
+
+    expect(res.status).toBe(200)
+    expect(res.body.meta).toEqual({ model: 'fake-model', country: 'EU', paperSize: 'A4', documentName: 'Curriculum Vitae (Europass-style)' })
+    expect(res.body.changes[0]).toMatchObject({ ruleKey: 'europass_fit', status: 'confirmed', why: expect.stringContaining('Netherlands') })
+    expect(res.body.checks.map((check: { ruleKey: string }) => check.ruleKey)).toEqual(
+      expect.arrayContaining(['length_pages', 'sensitive_data', 'language_grid']),
+    )
+    expect(JSON.stringify(model.calls[0].messages)).toContain('europass_fit: ')
+  })
+
   it('returns 502 when the model call fails', async () => {
     const model = fakeModel(new Error('connection reset'))
     const res = await post(model.send, ilToUs)
@@ -211,6 +224,7 @@ describe('POST /api/convert', () => {
     { from: 'IL', to: 'IL' },
     { from: 'ABROAD', to: 'US' },
     { from: 'ABROAD', to: 'DE' },
+    { from: 'ABROAD', to: 'EU' },
     { from: 'FR', to: 'IL' },
   ])('returns 400 for the pair $from → $to', async (pair) => {
     const model = fakeModel(message(JSON.stringify(validOutput)))

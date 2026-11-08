@@ -81,6 +81,7 @@ describe('POST /api/ratings', () => {
     { from: 'ABROAD', to: 'US' },
     { from: 'ABROAD', to: 'GB' },
     { from: 'ABROAD', to: 'DE' },
+    { from: 'ABROAD', to: 'EU' },
   ])('returns 400 and stores nothing for the pair $from to $to', async (pair) => {
     const res = await post({ ...valid, ...pair })
 

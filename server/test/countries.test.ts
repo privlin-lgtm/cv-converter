@@ -8,10 +8,11 @@ afterAll(async () => {
 })
 
 describe('GET /api/countries', () => {
-  it('returns the four countries', async () => {
+  it('returns the five targets', async () => {
     const res = await request(app).get('/api/countries')
     expect(res.status).toBe(200)
     expect(res.body).toEqual([
+      { code: 'EU', name: 'EU (Europass-style)', documentName: 'Curriculum Vitae (Europass-style)', paperSize: 'A4' },
       { code: 'DE', name: 'Germany', documentName: 'Curriculum Vitae (Lebenslauf)', paperSize: 'A4' },
       { code: 'IL', name: 'Israel', documentName: 'CV', paperSize: 'A4' },
       { code: 'GB', name: 'United Kingdom', documentName: 'CV', paperSize: 'A4' },
@@ -21,7 +22,7 @@ describe('GET /api/countries', () => {
 })
 
 describe('GET /api/countries/:code/norms', () => {
-  it.each(['US', 'GB', 'DE', 'IL'])('%s has its key rules', async (code) => {
+  it.each(['US', 'GB', 'DE', 'IL', 'EU'])('%s has its key rules', async (code) => {
     const res = await request(app).get(`/api/countries/${code}/norms`)
     expect(res.status).toBe(200)
     const keys: string[] = res.body.map((norm: { key: string }) => norm.key)
@@ -42,8 +43,16 @@ describe('GET /api/countries/:code/norms', () => {
     })
   })
 
-  it('copies army rows to US, GB and DE but not IL', async () => {
-    for (const code of ['US', 'GB', 'DE']) {
+  it('dates the EU rules from the Europass research', async () => {
+    const res = await request(app).get('/api/countries/EU/norms')
+    const dates = new Set(res.body.map((norm: { key: string; verifiedOn: string }) => `${norm.key}:${norm.verifiedOn}`))
+    expect(dates).toContain('europass_fit:2026-11-07')
+    expect(dates).toContain('military_placement_eu:2026-11-07')
+    expect(dates).toContain('military_jargon:2026-10-10')
+  })
+
+  it('copies army rows to US, GB, DE and EU but not IL', async () => {
+    for (const code of ['US', 'GB', 'DE', 'EU']) {
       const res = await request(app).get(`/api/countries/${code}/norms`)
       expect(res.body.map((norm: { key: string }) => norm.key)).toContain('military_jargon')
     }

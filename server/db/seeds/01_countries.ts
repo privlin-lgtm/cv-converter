@@ -8,6 +8,7 @@ export async function seed(knex: Knex): Promise<void> {
       { code: 'GB', name: 'United Kingdom', document_name: 'CV', paper_size: 'A4' },
       { code: 'DE', name: 'Germany', document_name: 'Curriculum Vitae (Lebenslauf)', paper_size: 'A4' },
       { code: 'IL', name: 'Israel', document_name: 'CV', paper_size: 'A4' },
+      { code: 'EU', name: 'EU (Europass-style)', document_name: 'Curriculum Vitae (Europass-style)', paper_size: 'A4' },
     ])
     .onConflict('code')
     .merge()

@@ -9,6 +9,7 @@ import { makeStore } from '../store.ts'
 
 // In the order the server returns them: sorted by name.
 export const COUNTRIES: Country[] = [
+  { code: 'EU', name: 'EU (Europass-style)', documentName: 'Curriculum Vitae (Europass-style)', paperSize: 'A4' },
   { code: 'DE', name: 'Germany', documentName: 'Curriculum Vitae (Lebenslauf)', paperSize: 'A4' },
   { code: 'IL', name: 'Israel', documentName: 'CV', paperSize: 'A4' },
   { code: 'GB', name: 'United Kingdom', documentName: 'CV', paperSize: 'A4' },
