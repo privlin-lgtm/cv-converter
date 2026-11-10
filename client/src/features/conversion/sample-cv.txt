@@ -1,0 +1,38 @@
+FICTIONAL TEST CV — NOT A REAL PERSON
+קורות חיים - Curriculum Vitae
+
+Personal Details
+Name: Noa Ben-Ari
+Date of birth: 14.03.1996
+ID number: 123456789
+Marital status: Married + 1 child
+Address: 12 Herzl St, Ramat Gan
+Phone: 054-555-0142
+Email: noa.benari@example.com
+
+Summary
+Software developer with 6 years of experience building backend services in C# and Python. Looking for a backend or full-stack position.
+
+Work Experience
+2021-today  Senior Backend Developer, Kestrel Data Ltd., Tel Aviv
+- Lead developer of the billing service (C#, .NET 8, PostgreSQL), handling about 2 million invoices a month
+- Moved the team's deployments to Kubernetes, cutting release time from 2 days to 3 hours
+- Mentor 3 junior developers
+
+2018-2021  Backend Developer, Sufa Systems, Petah Tikva
+- Built REST APIs in Python (Django) for a logistics platform
+- Wrote the integration tests that the team still uses in CI
+
+Military Service
+2014-2017  צה"ל - ממר"ם, סמ"ר
+Programmer in Mamram. Developed and maintained the "Orev" monitoring system for the Kirya. Worked on a team of 8 developers, C# and SQL Server. Security clearance: Sodi Beyoter.
+
+Education
+2017-2021  B.Sc. Computer Science, Tel Aviv University (average 88)
+
+Languages
+Hebrew - mother tongue
+English - very good
+
+Hobbies
+Running, cooking, travel
