@@ -10,6 +10,7 @@ import {
   setText,
   setTo,
 } from '../features/conversion/conversionSlice.ts'
+import sampleCv from '../features/conversion/sample-cv.txt?raw'
 import type { Direction } from '../features/conversion/types.ts'
 import { loadCountries } from '../features/countries/countriesSlice.ts'
 import { useAppDispatch, useAppSelector } from '../hooks.ts'
@@ -146,6 +147,11 @@ function ConvertPage() {
               aria-describedby="cv-count"
               onChange={(event) => dispatch(setText(event.target.value))}
             />
+            {text === '' && (
+              <button type="button" className="outline sample" onClick={() => dispatch(setText(sampleCv))}>
+                No CV to hand? Try a sample (a fictional Israeli developer)
+              </button>
+            )}
             <p id="cv-count" className={overLimit ? 'counter over' : 'counter'}>
               {`${formatCount(text.length)} / ${formatCount(MAX_TEXT_CHARS)}`}
             </p>

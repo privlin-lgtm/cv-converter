@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import spec from '../../../intent/2026-10-10-mvp/spec.md?raw'
 import ilCv from '../../../server/test/fixtures/il-ops-combat-reserves.txt?raw'
 import usResume from '../../../server/test/fixtures/us-resume.txt?raw'
+import sampleCv from '../features/conversion/sample-cv.txt?raw'
 import { COUNTRIES, countriesOk, jsonResponse, RESULT, renderWithProviders, stubFetch } from '../test/helpers.tsx'
 import ConvertPage from './ConvertPage.tsx'
 
@@ -124,6 +125,25 @@ describe('direction detection', () => {
     expect(direction(ISRAELI)).toBeChecked()
     expect(screen.getByLabelText('Target country')).toHaveValue('DE')
     expect(screen.getByRole('status')).toHaveTextContent('This looks like a CV from abroad (US address or GPA, phone number from abroad).')
+  })
+})
+
+describe('sample CV', () => {
+  it('fills the text box with the fictional Israeli CV and hides once there is text', async () => {
+    stubFetch(countriesOk)
+    renderConvertPage()
+    await loaded()
+    const sample = screen.getByRole('button', { name: /Try a sample/ })
+
+    fireEvent.click(sample)
+    expect(screen.getByLabelText('Paste text')).toHaveValue(sampleCv)
+    expect(sampleCv.startsWith('FICTIONAL TEST CV — NOT A REAL PERSON')).toBe(true)
+    expect(screen.getByRole('radio', { name: 'My Israeli CV → abroad' })).toBeChecked()
+    expect(screen.getByRole('button', { name: 'Convert' })).toBeEnabled()
+    expect(screen.queryByRole('button', { name: /Try a sample/ })).not.toBeInTheDocument()
+
+    typeCv('')
+    expect(screen.getByRole('button', { name: /Try a sample/ })).toBeVisible()
   })
 })
 

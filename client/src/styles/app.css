@@ -173,6 +173,12 @@ button:focus-visible {
   font-size: 0.875rem;
 }
 
+.outline.sample {
+  justify-self: start;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+}
+
 .privacy-note {
   margin: 0;
   padding: 0.75rem 1rem;
