@@ -9,8 +9,7 @@ Read the chain before changing anything: [intent](intent/2026-10-10-mvp/intent.m
 [spec](intent/2026-10-10-mvp/spec.md), [plan](intent/2026-10-10-mvp/plan.md), and the sourced
 rules in [research/cv-norms-2026-10.md](research/cv-norms-2026-10.md).
 
-npm workspaces: `client/` (Vite, React 19, Redux Toolkit, React Router) and `server/`
-(Express 5, Knex, pg, Zod). Config comes from `server/.env` (keys in `server/.env.example`).
+Config comes from `server/.env` (keys in `server/.env.example`).
 
 ## Commands (all from the repo root)
 | Command | Healthy output |
@@ -24,33 +23,25 @@ npm workspaces: `client/` (Vite, React 19, Redux Toolkit, React Router) and `ser
 
 Start the app with `npm run dev` from a terminal. The desktop app's preview launcher sets `PORT=5173`, which moves the API off 3001 and breaks the client's proxy.
 
-Server tests use `DATABASE_URL_TEST` only: `server/vitest.config.ts` points `DATABASE_URL` at it,
-and `test/globalSetup.ts` migrates and seeds it before the run. Test files run one at a time.
+Server tests run against `DATABASE_URL_TEST`, never the dev or production database.
 
 ## Never
 - Commit a real CV, an API key or a `.env`.
 - Store CV text anywhere: no table, column, file, temp file or localStorage.
 - Log request or response bodies.
 - Read `.env` files.
-- Write placeholders or TODOs.
 - Send a CV anywhere except the Anthropic API.
-- Put a literal secret in a test; build fakes by string concatenation.
 
 ## Always
 - Run `npm run build`, `npm test` and `npm run lint` before reporting done; paste the output in the PR description and give the result in your report.
 - Fix the code, not the test.
 - Start `.txt` fixtures with the line `FICTIONAL TEST CV — NOT A REAL PERSON` and use `@example.com` emails only.
-- Validate request bodies and model output with Zod.
 
 ## Conventions
-- TypeScript strict; thin route handlers that call services.
-- Server imports use `.js` extensions (NodeNext); `tsx` and Vitest resolve them to `.ts`.
-- Required config is read with `requireEnv()` from `server/src/env.ts`, which throws when a value is missing.
 - Rules always come from the `norms` table; never hardcode a country rule.
 - `why` text and sources come from the database, never from the model.
 - The model client stays behind `convertWithModel()`; the JSON schema is written by hand.
 - The rule-check column is `check_def`, because `check` is a reserved word in Postgres.
-- Knex config lives in `server/src/db.ts`; migrations and seeds are `.ts` files in `server/db/`.
 
 ## Code style
 These apply to new and changed code. Don't edit existing files only to bring them into line.
@@ -58,7 +49,7 @@ These apply to new and changed code. Don't edit existing files only to bring the
 - **No commentary in code.** No inline comments, JSDoc or file headers, unless a line uses a genuinely opaque workaround that needs one. This doesn't cover Markdown docs, the fixture marker line, or the description text in the model's JSON schema and prompt, which the model reads.
 - **Failures.** Never swallow an exception. Validate at the edges: request bodies and model output with Zod, uploads in the extract route, and calls to external APIs. Everywhere else, let errors throw. No speculative try/catch and no catch-log-and-continue. The model client's retry and the convert route's 422/502/504 mapping are the external-API edge and stay as they are.
 - **React.** Compact functional components. Use && and ternaries for conditional rendering unless nesting hurts readability. No extra wrapper divs or verbose inline styles. No custom hooks or helper functions that weren't asked for; the components and slices named in spec.md and plan.md count as asked for, and so do the typed Redux hooks in client/src/hooks.ts.
-- **Node.** ES modules, async/await, destructuring and optional chaining. No speculative error-handling middleware and no verbose logging. The rule against logging request or response bodies still applies.
+- **Node.** No speculative error-handling middleware and no verbose logging.
 
 ## Known agent mistakes
 None yet. Add one the second time it happens; the third time, it becomes a hook.
