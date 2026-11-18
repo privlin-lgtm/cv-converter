@@ -3,7 +3,7 @@
   "permissions": {
     "defaultMode": "default",
     "deny": [
-      "Read(**/.env)", "Read(**/.env.*.local)",
+      "Read(**/.env)", "Read(**/.env.local)", "Read(**/.env.*.local)",
       "Bash(gh pr merge *)", "Bash(git push * main)", "Bash(git push * master)"
     ],
     "allow": [
@@ -20,6 +20,8 @@
     "PreToolUse": [
       { "matcher": "Bash|PowerShell",
         "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/production-gate.mjs\"" }] },
+      { "matcher": "Bash|PowerShell",
+        "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/repo-guard.mjs\"" }] },
       { "matcher": "Edit|Write|MultiEdit",
         "hooks": [{ "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/secret-guard.mjs\"" }] }
     ]
